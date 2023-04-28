@@ -89,7 +89,7 @@ class _WiFiCredentialStep2State extends ConsumerState<WiFiCredentialStep2> {
     final wiFiAccessPoints = ref.watch(getWiFiAcces);
 
     return FutureBuilder<bool>(
-      future: WiFiScan.instance.hasCapability(),
+      // future: WiFiScan.instance.hasCapability(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());

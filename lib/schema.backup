@@ -1,0 +1,12 @@
+type User @model @auth(rules: [{ allow: owner, ownerField: "owner" ,identityClaim:"username", operations: [create, read, update] }]) {
+  id: ID! @auth(rules: [{ allow: owner, operations: [read] }])
+  name: String @auth(rules: [{ allow: owner, operations: [create , read, update] }])
+  address: String @auth(rules: [{ allow: owner, operations: [create , read, update] }])
+  phone: String @auth(rules: [{ allow: owner, operations: [create , read, update] }])
+  active: Boolean @auth(rules: [{ allow: owner, operations: [create, read] }])
+  userName: String @auth(rules: [{ allow: owner, operations: [create , read, update] }])
+  subscribeStart: String @auth(rules: [{ allow: owner, operations: [create, read] }])
+  subscribeEnd: String @auth(rules: [{ allow: owner, operations: [create, read] }])
+  email: String @auth(rules: [{ allow: owner, operations: [create , read, update] }])
+  owner: ID! @primaryKey @auth(rules: [{ allow: owner, operations: [read] }])
+}

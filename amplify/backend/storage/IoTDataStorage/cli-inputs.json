@@ -1,0 +1,11 @@
+{
+  "resourceName": "IoTDataStorage",
+  "policyUUID": "ffcca5b0",
+  "bucketName": "waterlevelappnewc3e508ce770f4fc4b887ed30746b456",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "READ"
+  ],
+  "triggerFunction": "NONE"
+}

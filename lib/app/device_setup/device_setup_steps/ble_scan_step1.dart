@@ -17,12 +17,12 @@ class BLEScanStep1 extends ConsumerStatefulWidget {
 }
 
 class _BLEScanStep1State extends ConsumerState<BLEScanStep1> {
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    ref.watch(bleServicesProvider).stopScan();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   // TODO: implement dispose
+  //   ref.watch(bleServicesProvider).stopScan();
+  //   // super.dispose();
+  // }
 
   @override
   void initState() {

@@ -12,7 +12,9 @@ class DeviceSetupPage extends ConsumerStatefulWidget {
   const DeviceSetupPage({Key? key}) : super(key: key);
 
   static Future<void> show(BuildContext context) async {
-    await Navigator.of(context, rootNavigator: true).pushNamed(
+    await Navigator.of(
+      context,
+    ).pushNamed(
       AppRoutes.deviceSetupPage,
       // arguments: settings,
     );
@@ -27,6 +29,13 @@ final currentStepProvider = StateProvider<int>((ref) => 0);
 
 class _DeviceSetupPageState extends ConsumerState<DeviceSetupPage> {
   StepperType stepperType = StepperType.horizontal;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    ref.watch(bleServicesProvider).stopScan();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +96,7 @@ class _DeviceSetupPageState extends ConsumerState<DeviceSetupPage> {
                 : StepState.disabled,
       ),
     ];
+
     return SafeArea(
       child: Scaffold(
         body: Column(

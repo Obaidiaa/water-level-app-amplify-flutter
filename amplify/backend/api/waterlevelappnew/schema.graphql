@@ -1,0 +1,38 @@
+enum DeviceType {
+  WATER_LEVEL_SENSOR
+}
+
+type Device @model @auth(rules: [{allow: owner, operations: [read, update]}, {allow: groups, groups: ["Admins"], operations: [create, read, update, delete]}]) {
+  active: Boolean
+  thingName: String
+  highLevelAlarm: Int
+  lowLevelAlarm: Int
+  lat: Float
+  lng: Float
+  type: DeviceType
+  height: Int
+  location: String
+  ownerCounter: Int
+  certificate: String
+  notification: Boolean
+  serialNumber: ID! @primaryKey
+  owner: String @auth(rules: [{allow: owner, operations: [read, update, delete]}, {allow: groups, groups: ["Admins"], operations: [create, read, update, delete]}])
+}
+
+type ThingOwnerManagerRes @model{
+  status : Int,
+  message : String,
+  action : String,
+  serialNumber : ID,
+  owner : ID
+}
+
+ type Query{
+  ThingOwnerManager(serialNumber: ID!, action: String!): ThingOwnerManagerRes @function(name: "ThingOwnerManager-${env}")
+  AttachPolicyToUser(username: String!): AttachPolicyToUserRes @function(name: "AttachPolicyToUser-${env}")
+}
+
+type AttachPolicyToUserRes @model{
+  status : Int,
+  message : String
+}

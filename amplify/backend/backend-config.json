@@ -1,0 +1,149 @@
+{
+  "api": {
+    "waterlevelappnew": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "waterlevelappnew"
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [],
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authwaterlevelappnew"
+            }
+          }
+        }
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync"
+    }
+  },
+  "auth": {
+    "userPoolGroups": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId",
+            "AppClientIDWeb",
+            "AppClientID",
+            "IdentityPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "waterlevelappnew"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito-UserPool-Groups"
+    },
+    "waterlevelappnew": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "NAME",
+          "PHONE_NUMBER",
+          "ADDRESS",
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    }
+  },
+  "function": {
+    "AttachPolicyToUser": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "IoTToS3": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "ThingOwnerManager": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_AttachPolicyToUser_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "AttachPolicyToUser"
+        }
+      ]
+    },
+    "AMPLIFY_function_AttachPolicyToUser_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "AttachPolicyToUser"
+        }
+      ]
+    },
+    "AMPLIFY_function_IoTToS3_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "IoTToS3"
+        }
+      ]
+    },
+    "AMPLIFY_function_IoTToS3_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "IoTToS3"
+        }
+      ]
+    },
+    "AMPLIFY_function_ThingOwnerManager_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ThingOwnerManager"
+        }
+      ]
+    },
+    "AMPLIFY_function_ThingOwnerManager_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ThingOwnerManager"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "IoTDataStorage": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
+    }
+  }
+}
