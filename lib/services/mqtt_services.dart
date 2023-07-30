@@ -1,13 +1,21 @@
+import 'dart:convert';
+
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:water_level_flutter/main.dart';
 import 'package:water_level_flutter/packages/mqtt_aws_iot.dart';
 
 final mqttServicesProvider = Provider<MqttServices>((ref) {
   return MqttServices(ref);
 });
+
+// statenotiffer for data from mqtt
+final devicesLevelData = StateProvider<Map<String, dynamic>>((ref) => {});
+
+// Map<String, dynamic> devicesLevelData = {};
 
 final mqttStatusNotifier = StateProvider<bool?>((ref) => false);
 
@@ -19,13 +27,14 @@ class MqttServices {
   }
 
   init() async {
-    CognitoAuthSession awsCredentials = await _fetchSession();
-    String? accessKey = awsCredentials.credentials!.awsAccessKey;
-    String? secretKey = awsCredentials.credentials!.awsSecretKey;
-    String? sessionToken = awsCredentials.credentials!.sessionToken;
-    String? identityId = awsCredentials.identityId;
-    String? username = awsCredentials.userSub;
-    mqttConnect(accessKey!, secretKey!, sessionToken!, identityId!, username!);
+    CognitoAuthSession awsCredentials = await fetchCognitoAuthSession();
+    String? accessKey = awsCredentials.credentialsResult.value.accessKeyId;
+    String? secretKey = awsCredentials.credentialsResult.value.secretAccessKey;
+    String? sessionToken = awsCredentials.credentialsResult.value.sessionToken;
+    String? identityId = awsCredentials.identityIdResult.value;
+    String? username = awsCredentials.userSubResult.value;
+    // print('identityId: $username');
+    mqttConnect(accessKey, secretKey, sessionToken!, identityId, username);
   }
 
   Future mqttConnect(String accessKey, String secretKey, String sessionToken,
@@ -58,7 +67,7 @@ class MqttServices {
 
     // Create the client with the signed url
     MqttServerClient client = MqttServerClient.withPort(
-        signedUrl, identityId, port,
+        signedUrl, username, port,
         maxConnectionAttempts: 1);
 
     // Set the protocol to V3.1.1 for AWS IoT Core, if you fail to do this you will not receive a connect ack with the response code
@@ -72,7 +81,7 @@ class MqttServices {
     client.keepAlivePeriod = 30;
 
     final MqttConnectMessage connMess =
-        MqttConnectMessage().withClientIdentifier(identityId);
+        MqttConnectMessage().withClientIdentifier(username);
 
     client.connectionMessage = connMess;
 
@@ -89,11 +98,11 @@ class MqttServices {
       print('MQTT client connected to AWS IoT');
 
       // Publish to a topic of your choice
-      final topic = '$identityId/topic';
-      final builder = MqttClientPayloadBuilder();
-      builder.addString('Hello World');
-      // Important: AWS IoT Core can only handle QOS of 0 or 1. QOS 2 (exactlyOnce) will fail!
-      client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
+      final topic = '$username/+/+';
+      // final builder = MqttClientPayloadBuilder();
+      // builder.addString('Hello World');
+      // // Important: AWS IoT Core can only handle QOS of 0 or 1. QOS 2 (exactlyOnce) will fail!
+      // client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
 
       // Subscribe to the same topic
       client.subscribe(topic, MqttQos.atLeastOnce);
@@ -105,6 +114,21 @@ class MqttServices {
         print(
             'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
         print('');
+
+        // prase payload to json
+        // List json = ref.read(devicesLevelData);
+
+        // json[c[0].topic.split('/')[1]] =
+        //     jsonDecode(pt)['levelSensor']['Height'];
+
+        ref.read(devicesLevelData.notifier).update((state) {
+          final newMap = {...state};
+          newMap[c[0].topic.split('/')[1]] =
+              jsonDecode(pt)['levelSensor']['Height'];
+          return newMap;
+        });
+        print('devicesLevelData: ${ref.read(devicesLevelData)}');
+        //update state provider to trigger rebuild widget
       });
     } else {
       print(
@@ -116,31 +140,21 @@ class MqttServices {
     print('Sleeping....');
     await MqttUtilities.asyncSleep(10);
 
-    print('Disconnecting');
-    client.disconnect();
-    ref.read(mqttStatusNotifier.notifier).state = false;
+    // print('Disconnecting');
+    // client.disconnect();
+    // ref.read(mqttStatusNotifier.notifier).state = false;
   }
 
-  static Future _fetchSession() async {
+  Future fetchCognitoAuthSession() async {
     try {
-      AuthSession res = await Amplify.Auth.fetchAuthSession(
-        options: CognitoSessionOptions(getAWSCredentials: true),
-      );
-
-      String identityId = (res as CognitoAuthSession).identityId!;
-
-      print('identityId: $identityId');
-      print('UserSub: ${res.userSub}');
-      try {
-        AuthUser res = await Amplify.Auth.getCurrentUser();
-        print('UserSub: ${res.username}');
-        // currentUser = res.username;
-      } on AuthException catch (e) {
-        print(e.message);
-      }
-      return res;
+      final cognitoPlugin =
+          Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey);
+      final result = await cognitoPlugin.fetchAuthSession();
+      final identityId = result.identityIdResult.value;
+      safePrint("Current user's identity ID: $identityId");
+      return result;
     } on AuthException catch (e) {
-      print(e.message);
+      safePrint('Error retrieving auth session: ${e.message}');
     }
   }
 }

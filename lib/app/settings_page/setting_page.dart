@@ -58,101 +58,101 @@ class _SettingPageState extends ConsumerState<SettingPage> {
         //   },
         // ),
 
-        ref.watch(settingPageModelViewProvider).when(
-            data: (data) {
-              String name = data.name;
-              String address = data.address;
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ListView(
-                    children: [
-                      Card(
-                        child: TextFormField(
-                          decoration:
-                              const InputDecoration(label: Text("Name")),
-                          initialValue: data.name,
-                          onChanged: (value) => name = value,
-                        ),
-                      ),
-                      // Card(
-                      //   child: TextFormField(
-                      //     decoration:
-                      //         const InputDecoration(label: Text("Username")),
-                      //     initialValue: data.userName,
-                      //   ),
-                      // ),
-                      Card(
-                        child: TextFormField(
-                          decoration:
-                              const InputDecoration(label: Text("Email")),
-                          initialValue: data.email,
-                          enabled: false,
-                        ),
-                      ),
-                      Card(
-                        child: TextFormField(
-                          decoration:
-                              const InputDecoration(label: Text("Phone")),
-                          initialValue: data.phone,
-                          enabled: false,
-                          // onChanged: (value) => data.phone = value,
-                        ),
-                      ),
-                      Card(
-                        child: TextFormField(
-                          decoration:
-                              const InputDecoration(label: Text("Address")),
-                          initialValue: data.address,
-                          onChanged: (value) => address = value,
-                        ),
-                      ),
-                      Card(
-                        child: ListTile(
-                          title: Text('subscribe start'),
-                          subtitle: Text('${data.subscribeStart}'),
-                        ),
-                      ),
-                      Card(
-                        child: ListTile(
-                          title: Text('subscribe end'),
-                          subtitle: Text('${data.subscribeEnd}'),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          final user = data.copyWith(
-                            name: name,
-                            address: address,
-                          );
-                          ref
-                              .watch(settingPageModelViewProvider.notifier)
-                              .update(user);
-                        },
-                        child: Text('Save'),
-                      ),
+        // ref.watch(settingPageModelViewProvider).when(
+        //     data: (data) {
+        //       String name = data.name;
+        //       String address = data.address;
+        //       return Expanded(
+        //         child: Padding(
+        //           padding: const EdgeInsets.all(8.0),
+        //           child: ListView(
+        //             children: [
+        //               Card(
+        //                 child: TextFormField(
+        //                   decoration:
+        //                       const InputDecoration(label: Text("Name")),
+        //                   initialValue: data.name,
+        //                   onChanged: (value) => name = value,
+        //                 ),
+        //               ),
+        //               // Card(
+        //               //   child: TextFormField(
+        //               //     decoration:
+        //               //         const InputDecoration(label: Text("Username")),
+        //               //     initialValue: data.userName,
+        //               //   ),
+        //               // ),
+        //               Card(
+        //                 child: TextFormField(
+        //                   decoration:
+        //                       const InputDecoration(label: Text("Email")),
+        //                   initialValue: data.email,
+        //                   enabled: false,
+        //                 ),
+        //               ),
+        //               Card(
+        //                 child: TextFormField(
+        //                   decoration:
+        //                       const InputDecoration(label: Text("Phone")),
+        //                   initialValue: data.phone,
+        //                   enabled: false,
+        //                   // onChanged: (value) => data.phone = value,
+        //                 ),
+        //               ),
+        //               Card(
+        //                 child: TextFormField(
+        //                   decoration:
+        //                       const InputDecoration(label: Text("Address")),
+        //                   initialValue: data.address,
+        //                   onChanged: (value) => address = value,
+        //                 ),
+        //               ),
+        //               Card(
+        //                 child: ListTile(
+        //                   title: Text('subscribe start'),
+        //                   subtitle: Text('${data.subscribeStart}'),
+        //                 ),
+        //               ),
+        //               Card(
+        //                 child: ListTile(
+        //                   title: Text('subscribe end'),
+        //                   subtitle: Text('${data.subscribeEnd}'),
+        //                 ),
+        //               ),
+        //               ElevatedButton(
+        //                 onPressed: () {
+        //                   final user = data.copyWith(
+        //                     name: name,
+        //                     address: address,
+        //                   );
+        //                   // ref
+        //                   //     .watch(settingPageModelViewProvider.notifier)
+        //                   //     .update(user);
+        //                 },
+        //                 child: Text('Save'),
+        //               ),
 
-                      ElevatedButton(
-                        onPressed: () {
-                          ref
-                              .read(settingPageModelViewProvider.notifier)
-                              .logoff();
-                        },
-                        child: Text('Logoff'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {},
-                        // ref.read(dataStoreProvider).clearData(),
-                        // ref.refresh(userData),
-                        child: Text('Clear Cache'),
-                      )
-                    ],
-                  ),
-                ),
-              );
-            },
-            error: ((error, stackTrace) => Text(error.toString())),
-            loading: () => CircularProgressIndicator()),
+        //               ElevatedButton(
+        //                 onPressed: () {
+        //                   // ref
+        //                   //     .read(settingPageModelViewProvider.notifier)
+        //                   //     .logoff();
+        //                 },
+        //                 child: Text('Logoff'),
+        //               ),
+        //               ElevatedButton(
+        //                 onPressed: () {},
+        //                 // ref.read(dataStoreProvider).clearData(),
+        //                 // ref.refresh(userData),
+        //                 child: Text('Clear Cache'),
+        //               )
+        //             ],
+        //           ),
+        //         ),
+        //       );
+        //     },
+        //     error: ((error, stackTrace) => Text(error.toString())),
+        //     loading: () => CircularProgressIndicator()),
       ],
     );
   }

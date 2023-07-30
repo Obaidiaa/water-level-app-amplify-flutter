@@ -4,8 +4,10 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:water_level_flutter/app/device_managment_page/device_managment_view_model.dart';
-import 'package:water_level_flutter/app/device_managment_page/device_page/device_edit_page.dart';
+import 'package:water_level_flutter/app/device_managment_page/presentation/device_managment_controller.dart';
+import 'package:water_level_flutter/app/device_managment_page/domain/Device.dart';
+import 'package:water_level_flutter/app/homepage/application/devices_service.dart';
+import 'package:water_level_flutter/app/homepage/presentation/home_page_controller.dart';
 import 'package:water_level_flutter/app/settings_page/setting_page_model_view.dart';
 import 'package:water_level_flutter/services/datastore_services.dart';
 import 'package:water_level_flutter/services/graphql_services.dart';
@@ -21,6 +23,8 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(devicesListFutureProvider);
+    final mqttStatus = ref.watch(mqttStatusNotifier);
     return Column(
       children: [
         Container(
@@ -45,28 +49,29 @@ class _HomePageState extends ConsumerState<HomePage> {
                   size: 25,
                 ),
                 Text(
-                  'Level',
+                  'Level' + mqttStatus.toString(),
                   style: TextStyle(fontSize: 25),
                 ),
-                ref.watch(mqttStatusNotifier)!
-                    ? Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                      )
-                    : Icon(
-                        Icons.cancel,
-                        color: Colors.red,
-                      ),
+                // ref.watch(mqttStatusNotifier)!
+                //     ? Icon(
+                //         Icons.check_circle,
+                //         color: Colors.green,
+                //       )
+                //     : Icon(
+                //         Icons.cancel,
+                //         color: Colors.red,
+                //       ),
               ],
             ),
           ),
         ),
         ElevatedButton(
             onPressed: () async {
-              ref.refresh(mqttServicesProvider);
+              // ref.refresh(mqttServicesProvider);
+              ref.read(homePageControllerProvider.notifier).initMQTT();
             },
             child: Text('Refresh')),
-        ref.watch(deviceManagementViewModelProvider).when(
+        state.when(
             data: (data) {
               return Expanded(
                 child: GridView.builder(
@@ -82,11 +87,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Text(
-                              "${data[index]!.thingName}",
+                              data[index]?.serialNumber ?? 'No Name',
                               style: TextStyle(fontSize: 25),
                             ),
                             Text(
-                              "76%",
+                              ref
+                                      .watch(devicesLevelData)[
+                                          data[index]?.serialNumber]
+                                      .toString() ??
+                                  'No Data',
                               style: TextStyle(fontSize: 25),
                             )
                           ],

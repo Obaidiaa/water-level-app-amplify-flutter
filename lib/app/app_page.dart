@@ -1,28 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_blue_plus/gen/flutterblueplus.pbjson.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:water_level_flutter/app/auth/login_page.dart';
-import 'package:water_level_flutter/app/device_setup/device_setup_page.dart';
-import 'package:water_level_flutter/app/device_managment_page/devices_managment_page.dart';
-import 'package:water_level_flutter/app/homepage/home_page.dart';
+import 'package:water_level_flutter/app/device_managment_page/presentation/devices_managment_page.dart';
+import 'package:water_level_flutter/app/homepage/presentation/home_page.dart';
 import 'package:water_level_flutter/app/settings_page/setting_page.dart';
-import 'package:water_level_flutter/app/widgets/devices_list.dart';
-import 'package:water_level_flutter/app/auth/register_page.dart';
-import 'package:water_level_flutter/routing/app_router.dart';
-import 'package:water_level_flutter/services/amplify_services.dart';
-import 'package:water_level_flutter/services/auth_notifier.dart';
-import 'package:water_level_flutter/services/auth_services.dart';
 
 class AppPage extends ConsumerStatefulWidget {
-  AppPage({Key? key}) : super(key: key);
-
-  static Future<void> show(BuildContext context) async {
-    await Navigator.of(context, rootNavigator: true).pushNamed(
-      AppRoutes.appPage,
-      // arguments: settings,
-    );
-  }
+  const AppPage({Key? key}) : super(key: key);
 
   @override
   ConsumerState<AppPage> createState() => _AppPageState();

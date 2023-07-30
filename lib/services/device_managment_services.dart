@@ -1,12 +1,8 @@
-import 'package:amplify_api/model_mutations.dart';
-import 'package:amplify_api/model_queries.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:water_level_flutter/app/device_managment_page/device_managment_view_model.dart';
-import 'package:water_level_flutter/app/device_managment_page/device_page/device_edit_view_model.dart';
-import 'package:water_level_flutter/models/Device.dart';
-import 'package:water_level_flutter/models/DeviceType.dart';
+import 'package:water_level_flutter/app/device_managment_page/presentation/device_managment_controller.dart';
+
 import 'package:water_level_flutter/models/ModelProvider.dart';
 import 'package:water_level_flutter/services/auth_services.dart';
 import 'package:water_level_flutter/services/device_management_notifier.dart';
@@ -84,7 +80,7 @@ class DeviceManagementServices {
     final d = await ref.read(graphqlServices).deleteDevice(id);
     d.when(
         data: (data) {
-          ref.refresh(deviceManagementViewModelProvider);
+          // ref.refresh(deviceManagementViewModelProvider);
           // Navigator.of(context).pop();
         },
         error: (error, stackTrace) => print(error.toString()),

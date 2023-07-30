@@ -1,0 +1,29 @@
+import 'package:riverpod/riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:water_level_flutter/app/device_managment_page/data/device_repository.dart';
+import 'package:water_level_flutter/app/device_managment_page/domain/Device.dart';
+
+part 'devices_service.g.dart';
+
+class DevicesService {
+  DevicesService({required this.devicesRepository});
+
+  final DevicesRepository devicesRepository;
+
+  Future<List<Device?>> devicesList() {
+    return devicesRepository.getDevices();
+  }
+}
+
+@riverpod
+DevicesService devicesService(DevicesServiceRef ref) {
+  return DevicesService(
+    devicesRepository: ref.watch(devicesRepositoryProvider),
+  );
+}
+
+@riverpod
+Future<List<Device?>> devicesListFuture(DevicesListFutureRef ref) {
+  final devicesService = ref.watch(devicesServiceProvider);
+  return devicesService.devicesList();
+}

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:water_level_flutter/app/device_managment_page/device_managment_view_model.dart';
+import 'package:water_level_flutter/app/device_managment_page/presentation/device_managment_controller.dart';
+import 'package:water_level_flutter/app/homepage/application/devices_service.dart';
 import 'package:water_level_flutter/services/amplify_services.dart';
 import 'package:water_level_flutter/services/datastore_services.dart';
 import 'package:water_level_flutter/services/device_management_notifier.dart';
@@ -17,7 +18,7 @@ class _DevicesListState extends ConsumerState<DevicesList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ref.watch(deviceManagementViewModelProvider).when(
+        ref.watch(devicesListFutureProvider).when(
             data: (data) {
               return Text('$data');
             },

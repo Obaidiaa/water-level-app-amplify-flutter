@@ -11,14 +11,14 @@ import 'package:wifi_scan/wifi_scan.dart';
 class DeviceSetupPage extends ConsumerStatefulWidget {
   const DeviceSetupPage({Key? key}) : super(key: key);
 
-  static Future<void> show(BuildContext context) async {
-    await Navigator.of(
-      context,
-    ).pushNamed(
-      AppRoutes.deviceSetupPage,
-      // arguments: settings,
-    );
-  }
+  // static Future<void> show(BuildContext context) async {
+  //   await Navigator.of(
+  //     context,
+  //   ).pushNamed(
+  //     AppRoutes.deviceSetupPage,
+  //     // arguments: settings,
+  //   );
+  // }
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
