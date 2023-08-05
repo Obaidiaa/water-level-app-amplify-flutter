@@ -1,16 +1,6 @@
-import 'dart:convert';
-
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:water_level_flutter/app/device_managment_page/presentation/device_managment_controller.dart';
-import 'package:water_level_flutter/app/device_managment_page/domain/Device.dart';
 import 'package:water_level_flutter/app/homepage/application/devices_service.dart';
-import 'package:water_level_flutter/app/homepage/presentation/home_page_controller.dart';
-import 'package:water_level_flutter/app/settings_page/setting_page_model_view.dart';
-import 'package:water_level_flutter/services/datastore_services.dart';
-import 'package:water_level_flutter/services/graphql_services.dart';
 import 'package:water_level_flutter/services/mqtt_services.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -21,10 +11,12 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+  bool isInit = false;
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(devicesListFutureProvider);
     final mqttStatus = ref.watch(mqttStatusNotifier);
+
     return Column(
       children: [
         Container(
@@ -48,31 +40,37 @@ class _HomePageState extends ConsumerState<HomePage> {
                   Icons.ac_unit_sharp,
                   size: 25,
                 ),
+
                 Text(
-                  'Level' + mqttStatus.toString(),
+                  'Level',
                   style: TextStyle(fontSize: 25),
                 ),
+
                 // ref.watch(mqttStatusNotifier)!
-                //     ? Icon(
-                //         Icons.check_circle,
-                //         color: Colors.green,
-                //       )
-                //     : Icon(
-                //         Icons.cancel,
-                //         color: Colors.red,
-                //       ),
+                mqttStatus!
+                    ? Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                      )
+                    : ElevatedButton(
+                        onPressed: () async {
+                          // ref.refresh(mqttServicesProvider);
+                          ref.read(mqttServicesProvider).init();
+                        },
+                        child: Text('connect')),
               ],
             ),
           ),
         ),
         ElevatedButton(
-            onPressed: () async {
-              // ref.refresh(mqttServicesProvider);
-              ref.read(homePageControllerProvider.notifier).initMQTT();
-            },
-            child: Text('Refresh')),
+            onPressed: () => ref.read(mqttServicesProvider).disconnect(),
+            child: Text('disconnect')),
         state.when(
             data: (data) {
+              if (!isInit) {
+                ref.read(mqttServicesProvider).getAllDeviceData(data);
+                isInit = true;
+              }
               return Expanded(
                 child: GridView.builder(
                     gridDelegate:
@@ -84,20 +82,46 @@ class _HomePageState extends ConsumerState<HomePage> {
                       return Card(
                         color: Colors.greenAccent,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              data[index]?.serialNumber ?? 'No Name',
-                              style: TextStyle(fontSize: 25),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                data[index]?.serialNumber ?? 'No Name',
+                                style: TextStyle(fontSize: 25),
+                              ),
                             ),
-                            Text(
-                              ref
-                                      .watch(devicesLevelData)[
-                                          data[index]?.serialNumber]
-                                      .toString() ??
-                                  'No Data',
-                              style: TextStyle(fontSize: 25),
-                            )
+                            Consumer(
+                              builder: (context, ref, child) {
+                                final lastUpdate = ref.watch(devicesLevelData)[
+                                    data[index]?.serialNumber];
+                                final t = lastUpdate?[1] ?? 'No Data';
+                                return Column(
+                                  children: [
+                                    Text(
+                                      lastUpdate?[0].toString() ?? 'No Data',
+                                      style: TextStyle(fontSize: 25),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text('$t'),
+                                        IconButton(
+                                          onPressed: () => ref
+                                              .read(mqttServicesProvider)
+                                              .getCurrentData(
+                                                  data[index]!.serialNumber),
+                                          icon: Icon(Icons.refresh),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
                           ],
                         ),
                       );
