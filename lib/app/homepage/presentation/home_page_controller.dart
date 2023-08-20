@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:water_level_flutter/app/device_managment_page/data/device_repository.dart';
@@ -17,6 +20,15 @@ class HomePageController extends _$HomePageController {
 
   initMQTT() {
     ref.read(mqttServicesProvider).init();
+    var period = const Duration(seconds: 15);
+    Timer.periodic(period, (arg) {
+      refreshData();
+    });
+  }
+
+  refreshData() async {
+    final devices = await ref.read(devicesListFutureProvider.future);
+    ref.read(mqttServicesProvider).getAllDeviceData(devices);
   }
 
   // Future<bool> getDevices() async {

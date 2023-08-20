@@ -6,7 +6,7 @@ part of 'devices_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$devicesServiceHash() => r'fe4d11e56738a2d3c3ca2e4bf786e195770222bd';
+String _$devicesServiceHash() => r'2635c4f02b2c377041d878db127c2c34b5b5f033';
 
 /// See also [devicesService].
 @ProviderFor(devicesService)
@@ -21,7 +21,7 @@ final devicesServiceProvider = AutoDisposeProvider<DevicesService>.internal(
 );
 
 typedef DevicesServiceRef = AutoDisposeProviderRef<DevicesService>;
-String _$devicesListFutureHash() => r'519b83c396a35ffb265f2dd633cf9e7116c3fe33';
+String _$devicesListFutureHash() => r'fc25fa6e51b8f0c67435c74fef7259d464c3bc4a';
 
 /// See also [devicesListFuture].
 @ProviderFor(devicesListFuture)

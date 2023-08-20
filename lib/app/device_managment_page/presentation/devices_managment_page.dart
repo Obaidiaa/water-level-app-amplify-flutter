@@ -143,7 +143,8 @@ class _DevicesManagmentPageState extends ConsumerState<DevicesManagmentPage> {
                             child: Icon(Icons.edit),
                             onTap: () {
                               // DevicePage.show(context, e);
-                              context.go(AppRoute.editDevice.name, extra: e);
+                              context.goNamed(AppRoute.editDevice.name,
+                                  extra: e);
                             },
                           ),
                         ),

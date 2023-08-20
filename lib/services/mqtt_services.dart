@@ -25,7 +25,7 @@ class MqttServices {
   // MqttServices(this.ref);
   Ref ref;
   MqttServices(this.ref) {
-    init();
+    // init();
   }
 
   late MqttServerClient client;
@@ -44,19 +44,26 @@ class MqttServices {
 
   disconnect() {
     client.disconnect();
-    ref.read(mqttStatusNotifier.notifier).state = false;
+    // ref.read(mqttStatusNotifier.notifier).state = false;
   }
 
   getCurrentData(String device) {
-    final builder = MqttClientPayloadBuilder();
-    builder.addString('{"message" : "currentdata"}');
-    client.publishMessage(
-        '$username/$device/currentdata', MqttQos.atMostOnce, builder.payload!);
+    if (client.connectionStatus!.state == MqttConnectionState.connected) {
+      final builder = MqttClientPayloadBuilder();
+      builder.addString('{"message" : "currentdata"}');
+      client.publishMessage('$username/$device/currentdata', MqttQos.atMostOnce,
+          builder.payload!);
+    } else {
+      print('not connected');
+      // init();
+    }
   }
 
   getAllDeviceData(List<Device?> devices) {
-    for (var device in devices) {
-      getCurrentData(device!.serialNumber);
+    if (client.connectionStatus!.state == MqttConnectionState.connected) {
+      for (var device in devices) {
+        getCurrentData(device!.serialNumber);
+      }
     }
   }
 
@@ -90,17 +97,38 @@ class MqttServices {
 
     // Create the client with the signed url
     client = MqttServerClient.withPort(signedUrl, username, port,
-        maxConnectionAttempts: 1);
+        maxConnectionAttempts: 2);
 
     // Set the protocol to V3.1.1 for AWS IoT Core, if you fail to do this you will not receive a connect ack with the response code
     client.setProtocolV311();
     // logging if you wish
-    client.logging(on: true);
+    client.logging(on: false);
     client.useWebSocket = true;
     client.secure = false;
-    client.autoReconnect = false;
+    client.autoReconnect = true;
     client.disconnectOnNoResponsePeriod = 90;
     client.keepAlivePeriod = 30;
+    // client.connectTimeoutPeriod = 2000;
+
+    /// If you do not want active confirmed subscriptions to be automatically re subscribed
+    /// by the auto connect sequence do the following, otherwise leave this defaulted.
+    // client.resubscribeOnAutoReconnect = false;
+
+    /// Add an auto reconnect callback.
+    /// This is the 'pre' auto re connect callback, called before the sequence starts.
+    // client.onAutoReconnect = onAutoReconnect;
+
+    /// Add an auto reconnect callback.
+    /// This is the 'post' auto re connect callback, called after the sequence
+    /// has completed. Note that re subscriptions may be occurring when this callback
+    /// is invoked. See [resubscribeOnAutoReconnect] above.
+    // client.onAutoReconnected = onAutoReconnected;
+
+    /// Add the successful connection callback if you need one.
+    /// This will be called after [onAutoReconnect] but before [onAutoReconnected]
+    client.onConnected = onConnected;
+
+    client.onDisconnected = onDisconnected;
 
     final MqttConnectMessage connMess =
         MqttConnectMessage().withClientIdentifier(username);
@@ -108,16 +136,20 @@ class MqttServices {
     client.connectionMessage = connMess;
 
     // Connect the client
+
     try {
       print('MQTT client connecting to AWS IoT using cognito....');
       await client.connect();
+      ref.read(mqttStatusNotifier.notifier).state = true;
     } on Exception catch (e) {
       print('MQTT client exception - $e');
       client.disconnect();
+      ref.read(mqttStatusNotifier.notifier).state = false;
     }
+
     if (client.connectionStatus!.state == MqttConnectionState.connected) {
       print('MQTT client connected to AWS IoT');
-      ref.read(mqttStatusNotifier.notifier).state = true;
+      // ref.read(mqttStatusNotifier.notifier).state = true;
 
       // Publish to a topic of your choice
       final topic = '$username/+/+';
@@ -127,15 +159,15 @@ class MqttServices {
       // client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
 
       // Subscribe to the same topic
-      client.subscribe(topic, MqttQos.atLeastOnce);
+      client.subscribe(topic, MqttQos.atMostOnce);
       // Print incoming messages from another client on this topic
       client.updates!.listen((List<MqttReceivedMessage<MqttMessage>> c) {
         final recMess = c[0].payload as MqttPublishMessage;
         final pt =
             MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-        print(
-            'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
-        print('');
+        // print(
+        //     'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
+        // print('');
 
         // prase payload to json
         // List json = ref.read(devicesLevelData);
@@ -143,18 +175,21 @@ class MqttServices {
         // json[c[0].topic.split('/')[1]] =
         //     jsonDecode(pt)['levelSensor']['Height'];
 
-        ref.read(devicesLevelData.notifier).update((state) {
-          final newMap = {...state};
-          final d = DateTime.now();
+        if (c[0].topic.contains("level")) {
+          ref.read(devicesLevelData.notifier).update((state) {
+            final newMap = {...state};
+            final d = DateTime.now();
 
-          newMap[c[0].topic.split('/')[1]] = [
-            jsonDecode(pt)['levelSensor']['Height'],
-            '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}:${d.second.toString().padLeft(2, '0')}'
-          ];
+            newMap[c[0].topic.split('/')[1]] = [
+              jsonDecode(pt)['levelSensor']['Height'],
+              d
+              // '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}:${d.second.toString().padLeft(2, '0')}'
+            ];
 
-          return newMap;
-        });
-        print('devicesLevelData: ${ref.read(devicesLevelData)}');
+            return newMap;
+          });
+          print('devicesLevelData: ${ref.read(devicesLevelData)}');
+        }
         //update state provider to trigger rebuild widget
       });
     } else {
@@ -170,6 +205,32 @@ class MqttServices {
     // print('Disconnecting');
     // client.disconnect();
     // ref.read(mqttStatusNotifier.notifier).state = false;
+  }
+
+  /// The pre auto re connect callback
+  void onAutoReconnect() {
+    print(
+        'EXAMPLE::onAutoReconnect client callback - Client auto reconnection sequence will start');
+  }
+
+  /// The post auto re connect callback
+  void onAutoReconnected() {
+    print(
+        'EXAMPLE::onAutoReconnected client callback - Client auto reconnection sequence has completed');
+  }
+
+  /// The successful connect callback
+  void onConnected() {
+    print(
+        'EXAMPLE::OnConnected client callback - Client connection was successful');
+    ref.read(mqttStatusNotifier.notifier).state = true;
+  }
+
+  /// The unsolicited disconnect callback
+  void onDisconnected() {
+    print(
+        'EXAMPLE::OnDisconnected client callback - Client disconnection was unsolicited');
+    ref.read(mqttStatusNotifier.notifier).state = false;
   }
 
   Future fetchCognitoAuthSession() async {

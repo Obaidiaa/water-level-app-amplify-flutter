@@ -94,7 +94,10 @@
 //   }
 // }
 
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:water_level_flutter/app/device_managment_page/data/device_repository.dart';
+import 'package:water_level_flutter/app/device_managment_page/domain/Device.dart';
 
 part 'device_edit_controller.g.dart';
 
@@ -103,5 +106,45 @@ class DeviceEditController extends _$DeviceEditController {
   @override
   FutureOr<void> build() {
     //
+  }
+
+  Future<bool> declaimDevice(String serialNumber) async {
+    // final currentUser = ref.read(authRepositoryProvider).currentUser;
+    // if (currentUser!.uid != announcement.authorId) {
+    //   throw AssertionError('User can\'t be null');
+    // }
+    final repository = ref.read(devicesRepositoryProvider);
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => repository.declaimDevice(
+          serialNumber,
+        ));
+
+    return state.hasError == false;
+  }
+
+  Future<bool> updateDevice(
+    String serialNumber,
+    String thingName,
+    int height,
+    int highLevelAlarm,
+    int lowLevelAlarm,
+    bool notification,
+    String location,
+  ) async {
+    final repository = ref.read(devicesRepositoryProvider);
+    state = const AsyncLoading();
+    // device.
+
+    state = await AsyncValue.guard(() => repository.updateDevice(
+          serialNumber,
+          thingName,
+          height,
+          highLevelAlarm,
+          lowLevelAlarm,
+          notification,
+          location,
+        ));
+
+    return state.hasError == false;
   }
 }

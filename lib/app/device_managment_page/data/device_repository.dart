@@ -44,7 +44,27 @@ class DevicesRepository {
     return query(request);
   }
 
-  query(GraphQLRequest request) async {
+  Future declaimDevice(String id) async {
+    const thingOwnerManager = 'ThingOwnerManager';
+    String graphQLDocument = '''query ThingOwnerManager {
+  $thingOwnerManager(serialNumber: "$id", action: "claim") {
+          status
+    message
+    action
+    serialNumber
+    owner
+  }
+}''';
+    final request = GraphQLRequest<ThingOwnerManagerRes>(
+      document: graphQLDocument,
+      modelType: ThingOwnerManagerRes.classType,
+      decodePath: thingOwnerManager,
+    );
+    print(" ididididdididi ${id}");
+    return query(request);
+  }
+
+  Future<AsyncValue> query(GraphQLRequest request) async {
     try {
       final response = await Amplify.API.query(request: request).response;
       print('Response: data : ${response.data}  error :${response.errors}');
@@ -54,28 +74,25 @@ class DevicesRepository {
       // if (response.data?.status != 200) {
       //   return AsyncError(response.data.message, StackTrace.empty);
       // }
-      return response.data;
+      return AsyncData(response.data);
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<AsyncValue> updateDevice(Device device) async {
-    // final queryPredicate = Device.SERIALNUMBER.eq(device.serialNumber);
-    // final readRequest =
-    //     ModelQueries.list(Device.classType, where: queryPredicate);
-    // final readResponse = await Amplify.API.query(request: readRequest).response;
-    // final result = readResponse.data;
-    // if (result == null) {
-    //   return AsyncError(
-    //       'read errors: ${readResponse.errors}', StackTrace.empty);
-    // }
-    // print("wwwwwwwwwwwwwwwwwwwww ${result.items.first}");
+  Future<AsyncValue> updateDevice(
+      String serialNumber,
+      String thingName,
+      int height,
+      int highLevelAlarm,
+      int lowLevelAlarm,
+      bool notification,
+      String location) async {
     const updateDevice = 'updateDevice';
     String graphQLDocument = '''mutation updateDevice {
-  $updateDevice(input: {serialNumber: "${device.serialNumber}", thingName: "${device.thingName}", height:${device.height} ,
-   highLevelAlarm:${device.highLevelAlarm}, lowLevelAlarm:${device.lowLevelAlarm},
-   notification:${device.notification},location:"${device.location}"}) {
+  $updateDevice(input: {serialNumber: "$serialNumber", thingName: "$thingName", height:$height ,
+   highLevelAlarm:$highLevelAlarm, lowLevelAlarm:$lowLevelAlarm,
+   notification:$notification,location:"$location"}) {
       owner
       serialNumber
       active

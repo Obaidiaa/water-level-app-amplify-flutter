@@ -1,8 +1,10 @@
 // // app routes
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/gen/flutterblueplus.pbjson.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:water_level_flutter/app/device_managment_page/domain/Device.dart';
+import 'package:water_level_flutter/app/device_managment_page/presentation/device_page/device_edit_page.dart';
 import 'package:water_level_flutter/app/device_managment_page/presentation/devices_managment_page.dart';
 import 'package:water_level_flutter/app/homepage/presentation/home_page.dart';
 import 'package:water_level_flutter/app/settings_page/setting_page.dart';
@@ -14,7 +16,8 @@ part 'app_router.g.dart';
 
 // private navigators
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
-final _shellNavigatorKey = GlobalKey<NavigatorState>();
+final _devicesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'devices');
+final _settingsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'settings');
 
 enum AppRoute {
   home,
@@ -62,68 +65,131 @@ GoRouter goRouter(GoRouterRef ref) {
       //     child: LoginPage(),
       //   ),
       // ),
-      ShellRoute(
-        navigatorKey: _shellNavigatorKey,
-        builder: (context, state, child) {
-          return ScaffoldWithBottomNavBar(child: child);
+
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return ScaffoldWithNestedNavigation(navigationShell: navigationShell);
         },
-        routes: [
-          GoRoute(
-            path: '/devices',
-            name: AppRoute.devices.name,
-            pageBuilder: (context, state) => NoTransitionPage(
-              key: state.pageKey,
-              child: const DevicesManagmentPage(),
-            ),
+        branches: [
+          StatefulShellBranch(
             routes: [
-              //   GoRoute(
-              //     path: 'announcements/add',
-              //     name: AppRoute.addAnnouncement.name,
-              //     parentNavigatorKey: _shellNavigatorKey,
-              //     pageBuilder: (context, state) {
-              //       return MaterialPage(
-              //         key: state.pageKey,
-              //         fullscreenDialog: true,
-              //         child: AnnouncementAdd(),
-              //       );
-              //     },
-              //   ),
-              // GoRoute(
-              //   path: 'announcement/:id',
-              //   name: AppRoute.editDevice.name,
-              //   parentNavigatorKey: _shellNavigatorKey,
-              //   pageBuilder: (context, state) {
-              //     final announcement = state.extra as Device;
-              //     final id = state.params['id']!;
-              //     return MaterialPage(
-              //       key: state.pageKey,
-              //       child: DeviceEditPage(
-              //         id: id,
-              //         announcement: announcement,
-              //       ),
-              //     );
-              //   },
-              // ),
+              GoRoute(
+                path: '/',
+                name: AppRoute.home.name,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: HomePage(),
+                ),
+              ),
             ],
           ),
-          GoRoute(
-            path: '/',
-            name: AppRoute.home.name,
-            pageBuilder: (context, state) => NoTransitionPage(
-              key: state.pageKey,
-              child: const HomePage(),
-            ),
+          StatefulShellBranch(
+            navigatorKey: _devicesNavigatorKey,
+            routes: [
+              GoRoute(
+                path: '/devices',
+                name: AppRoute.devices.name,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: DevicesManagmentPage(),
+                ),
+                routes: [
+                  GoRoute(
+                    path: 'devices/edit',
+                    name: AppRoute.editDevice.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    pageBuilder: (context, state) {
+                      final device = state.extra as Device;
+                      return MaterialPage(
+                        fullscreenDialog: true,
+                        child: DeviceEditPage(
+                          device: device,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/settings',
-            name: AppRoute.settings.name,
-            pageBuilder: (context, state) => NoTransitionPage(
-              key: state.pageKey,
-              child: const SettingPage(),
-            ),
+          StatefulShellBranch(
+            navigatorKey: _settingsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: '/settings',
+                name: AppRoute.settings.name,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: SettingPage(),
+                ),
+              ),
+            ],
           ),
         ],
       ),
+
+      //   ShellRoute(
+      //     navigatorKey: _shellNavigatorKey,
+      //     builder: (context, state, child) {
+      //       return ScaffoldWithBottomNavBar(child: child);
+      //     },
+      //     routes: [
+      //       GoRoute(
+      //         path: '/devices',
+      //         name: AppRoute.devices.name,
+      //         pageBuilder: (context, state) => NoTransitionPage(
+      //           key: state.pageKey,
+      //           child: const DevicesManagmentPage(),
+      //         ),
+      //         routes: [
+      //           GoRoute(
+      //             path: 'devices/edit',
+      //             name: AppRoute.editDevice.name,
+      //             parentNavigatorKey: _shellNavigatorKey,
+      //             pageBuilder: (context, state) {
+      //               final device = state.extra as Device;
+      //               return MaterialPage(
+      //                 key: state.pageKey,
+      //                 fullscreenDialog: true,
+      //                 child: DeviceEditPage(
+      //                   device: device,
+      //                 ),
+      //               );
+      //             },
+      //           ),
+      //           // GoRoute(
+      //           //   path: 'announcement/:id',
+      //           //   name: AppRoute.editDevice.name,
+      //           //   parentNavigatorKey: _shellNavigatorKey,
+      //           //   pageBuilder: (context, state) {
+      //           //     final announcement = state.extra as Device;
+      //           //     final id = state.params['id']!;
+      //           //     return MaterialPage(
+      //           //       key: state.pageKey,
+      //           //       child: DeviceEditPage(
+      //           //         id: id,
+      //           //         announcement: announcement,
+      //           //       ),
+      //           //     );
+      //           //   },
+      //           // ),
+      //         ],
+      //       ),
+      //       GoRoute(
+      //         path: '/',
+      //         name: AppRoute.home.name,
+      //         pageBuilder: (context, state) => NoTransitionPage(
+      //           key: state.pageKey,
+      //           child: const HomePage(),
+      //         ),
+      //       ),
+      //       GoRoute(
+      //         path: '/settings',
+      //         name: AppRoute.settings.name,
+      //         pageBuilder: (context, state) => NoTransitionPage(
+      //           key: state.pageKey,
+      //           child: const SettingPage(),
+      //         ),
+      //       ),
+      //     ],
+      //   ),
     ],
     //errorBuilder: (context, state) => const NotFoundScreen(),
   );

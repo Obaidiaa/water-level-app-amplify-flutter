@@ -7,7 +7,7 @@ part of 'device_edit_controller.dart';
 // **************************************************************************
 
 String _$deviceEditControllerHash() =>
-    r'e3837003ff643e482cbd657134629b0eb7cd27fb';
+    r'8ef34206ccb8a22db199379ebda641ad3bc2ed3f';
 
 /// See also [DeviceEditController].
 @ProviderFor(DeviceEditController)
