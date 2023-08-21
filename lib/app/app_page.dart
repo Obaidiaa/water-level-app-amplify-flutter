@@ -43,77 +43,75 @@ class _AppPageState extends ConsumerState<AppPage> {
         _selectedIndex = controller.page!.toInt();
       });
     });
-    return SafeArea(
-      child: Scaffold(
-        body: PageView.builder(
-          itemBuilder: (context, index) => Center(
-            child: _widgetOptions.elementAt(index),
-          ),
-          itemCount: 3,
-          controller: controller,
-          // onPageChanged: (index) {
-          //   setState(() {
-          //     print(index);
-          //     _selectedIndex = index;
-          //   });
-          // },
-          // children:
-          // mainAxisAlignment: MainAxisAlignment.end,
-          // [
-
-          // TextButton(
-          //     onPressed: () {
-          //       ref.read(authServicesProvider).signOutUser();
-          //     },
-          //     child: const Text('Logout')),
-          // DevicesList(),
-          // Center(
-          //   child: ElevatedButton(
-          //     onPressed: (() {
-          //       ref.watch(amplifyServicesProvider).addDevice();
-          //     }),
-          //     child: Text('Add'),
-          //   ),
-          // ),
-          // Center(
-          //   child: ElevatedButton(
-          //     onPressed: (() {
-          //       ref.watch(amplifyServicesProvider).deletePostsWithId();
-          //     }),
-          //     child: Text('Delete'),
-          //   ),
-          // ),
-          // Center(
-          //   child: ElevatedButton(
-          //       onPressed: () => DeviceSetupPage.show(context),
-          //       child: Text('Device Setup')),
-          // ),
-          // ],
+    return Scaffold(
+      body: PageView.builder(
+        itemBuilder: (context, index) => Center(
+          child: _widgetOptions.elementAt(index),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.device_hub_sharp),
-              label: 'Devices',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          onTap: _onItemTapped,
-        ),
+        itemCount: 3,
+        controller: controller,
+        // onPageChanged: (index) {
+        //   setState(() {
+        //     print(index);
+        //     _selectedIndex = index;
+        //   });
+        // },
+        // children:
+        // mainAxisAlignment: MainAxisAlignment.end,
+        // [
 
-        // } else {
-        //   return LoginPage();
-        // }
+        // TextButton(
+        //     onPressed: () {
+        //       ref.read(authServicesProvider).signOutUser();
+        //     },
+        //     child: const Text('Logout')),
+        // DevicesList(),
+        // Center(
+        //   child: ElevatedButton(
+        //     onPressed: (() {
+        //       ref.watch(amplifyServicesProvider).addDevice();
+        //     }),
+        //     child: Text('Add'),
+        //   ),
+        // ),
+        // Center(
+        //   child: ElevatedButton(
+        //     onPressed: (() {
+        //       ref.watch(amplifyServicesProvider).deletePostsWithId();
+        //     }),
+        //     child: Text('Delete'),
+        //   ),
+        // ),
+        // Center(
+        //   child: ElevatedButton(
+        //       onPressed: () => DeviceSetupPage.show(context),
+        //       child: Text('Device Setup')),
+        // ),
+        // ],
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.device_hub_sharp),
+            label: 'Devices',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+      ),
+
+      // } else {
+      //   return LoginPage();
+      // }
     );
   }
 }

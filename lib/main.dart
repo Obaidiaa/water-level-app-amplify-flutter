@@ -97,24 +97,27 @@ class MyApp extends HookConsumerWidget {
     final router = ref.watch(goRouterProvider);
 
     return Authenticator(
-        child: MaterialApp.router(
-      title: "Water Level BLE",
-      builder: Authenticator.builder(),
-      routerConfig: router,
-      // home: SafeArea(
-      //   child: Scaffold(
-      //     body: Column(
-      //       mainAxisAlignment: MainAxisAlignment.center,
-      //       children: const [
-      //         Center(
-      //           child: Text('Amplify Not configured'),
-      //         )
-      //       ],
-      //     ),
-      //   ),
-      // ),
-      debugShowCheckedModeBanner: false,
-    ));
+      child: MaterialApp.router(
+        title: "Water Level BLE",
+        builder: Authenticator.builder(),
+
+        routerConfig: router,
+
+        // home: SafeArea(
+        //   child: Scaffold(
+        //     body: Column(
+        //       mainAxisAlignment: MainAxisAlignment.center,
+        //       children: const [
+        //         Center(
+        //           child: Text('Amplify Not configured'),
+        //         )
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        debugShowCheckedModeBanner: false,
+      ),
+    );
 
     // return Authenticator(
     //   child: MaterialApp(

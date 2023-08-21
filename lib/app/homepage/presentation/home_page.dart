@@ -76,9 +76,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
           ),
         ),
-        ElevatedButton(
-            onPressed: () => ref.read(mqttServicesProvider).disconnect(),
-            child: const Text('disconnect')),
+        // ElevatedButton(
+        //     onPressed: () => ref.read(mqttServicesProvider).disconnect(),
+        //     child: const Text('disconnect')),
         state.when(
             data: (data) {
               if (mqttStatus) {

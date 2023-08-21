@@ -76,11 +76,11 @@ class DeviceManagmentController extends _$DeviceManagmentController {
     print('build');
   }
 
-  claimDevice(String id) async {
+  Future<bool> claimDevice(String id) async {
     state = const AsyncLoading();
     final repository = ref.read(devicesRepositoryProvider);
     state = await AsyncValue.guard(() => repository.claimDevice(id));
 
-    state.hasError == false;
+    return state.hasError == false;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,15 @@ class SettingPage extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SettingPageState();
+}
+
+Future<void> signOutCurrentUser() async {
+  final result = await Amplify.Auth.signOut();
+  if (result is CognitoCompleteSignOut) {
+    safePrint('Sign out completed successfully');
+  } else if (result is CognitoFailedSignOut) {
+    safePrint('Error signing user out: ${result.exception.message}');
+  }
 }
 
 class _SettingPageState extends ConsumerState<SettingPage> {
@@ -49,6 +59,8 @@ class _SettingPageState extends ConsumerState<SettingPage> {
             ),
           ),
         ),
+        ElevatedButton(
+            onPressed: () => signOutCurrentUser(), child: Text('Sign Out')),
         // StreamBuilder(
         //   stream: ref.watch(userManagementServicesProvider).observeUser(),
         //   builder: (BuildContext context, AsyncSnapshot snapshot) {

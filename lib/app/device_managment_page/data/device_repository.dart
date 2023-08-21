@@ -47,7 +47,7 @@ class DevicesRepository {
   Future declaimDevice(String id) async {
     const thingOwnerManager = 'ThingOwnerManager';
     String graphQLDocument = '''query ThingOwnerManager {
-  $thingOwnerManager(serialNumber: "$id", action: "claim") {
+  $thingOwnerManager(serialNumber: "$id", action: "declaim") {
           status
     message
     action
@@ -69,6 +69,12 @@ class DevicesRepository {
       final response = await Amplify.API.query(request: request).response;
       print('Response: data : ${response.data}  error :${response.errors}');
       if (response.errors.isNotEmpty) {
+        if (response.errors.first.message == 'ResourceNotFoundException') {
+          throw 'Device not found';
+        }
+        if (response.errors.first.message == 'UriParameterException') {
+          throw 'Something went wrong';
+        }
         throw response.errors.first.message;
       }
       // if (response.data?.status != 200) {

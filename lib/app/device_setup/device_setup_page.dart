@@ -97,74 +97,72 @@ class _DeviceSetupPageState extends ConsumerState<DeviceSetupPage> {
       ),
     ];
 
-    return SafeArea(
-      child: Scaffold(
-        body: Column(
-          children: [
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     Text(
-            //       'Device Setup',
-            //       style: TextStyle(fontSize: 42),
-            //     )
-            //   ],
-            // ),
-            Expanded(
-              child: Stepper(
-                controlsBuilder: ((context, details) {
-                  return Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        if (details.currentStep > 0)
-                          ElevatedButton(
-                            onPressed: details.onStepCancel,
-                            child: Text('Back'),
-                          ),
+    return Scaffold(
+      body: Column(
+        children: [
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     Text(
+          //       'Device Setup',
+          //       style: TextStyle(fontSize: 42),
+          //     )
+          //   ],
+          // ),
+          Expanded(
+            child: Stepper(
+              controlsBuilder: ((context, details) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      if (details.currentStep > 0)
+                        ElevatedButton(
+                          onPressed: details.onStepCancel,
+                          child: Text('Back'),
+                        ),
 
-                        if (details.currentStep == 2)
-                          ElevatedButton(
-                            onPressed: ref.watch(bleConnectionStatus)
-                                ? details.onStepContinue
-                                : null,
-                            child: const Text('Send'),
-                          ),
+                      if (details.currentStep == 2)
+                        ElevatedButton(
+                          onPressed: ref.watch(bleConnectionStatus)
+                              ? details.onStepContinue
+                              : null,
+                          child: const Text('Send'),
+                        ),
 
-                        if (details.currentStep == 0)
-                          ElevatedButton(
-                            onPressed: ref.watch(bleConnectionStatus)
-                                ? details.onStepContinue
-                                : null,
-                            child: const Text('Contenue'),
-                          ),
+                      if (details.currentStep == 0)
+                        ElevatedButton(
+                          onPressed: ref.watch(bleConnectionStatus)
+                              ? details.onStepContinue
+                              : null,
+                          child: const Text('Contenue'),
+                        ),
 
-                        // if (details.currentStep == 1)
-                        //   ElevatedButton(
-                        //     onPressed: ref
-                        //                 .watch(wiFiServicesProvider)
-                        //                 .wifiAccesPointCredentials['ssid'] !=
-                        //             ''
-                        //         ? details.onStepContinue
-                        //         : null,
-                        //     child: const Text('Contenue'),
-                        //   ),
-                      ],
-                    ),
-                  );
-                }),
-                steps: steps,
-                currentStep: currentStep,
-                physics: ScrollPhysics(),
-                type: stepperType,
-                onStepTapped: (step) => tapped(step),
-                onStepContinue: continued,
-                onStepCancel: cancel,
-              ),
-            )
-          ],
-        ),
+                      // if (details.currentStep == 1)
+                      //   ElevatedButton(
+                      //     onPressed: ref
+                      //                 .watch(wiFiServicesProvider)
+                      //                 .wifiAccesPointCredentials['ssid'] !=
+                      //             ''
+                      //         ? details.onStepContinue
+                      //         : null,
+                      //     child: const Text('Contenue'),
+                      //   ),
+                    ],
+                  ),
+                );
+              }),
+              steps: steps,
+              currentStep: currentStep,
+              physics: ScrollPhysics(),
+              type: stepperType,
+              onStepTapped: (step) => tapped(step),
+              onStepContinue: continued,
+              onStepCancel: cancel,
+            ),
+          )
+        ],
       ),
     );
   }
