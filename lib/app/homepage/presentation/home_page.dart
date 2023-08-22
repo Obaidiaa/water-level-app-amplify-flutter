@@ -47,31 +47,39 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: SizedBox(
             height: MediaQuery.of(context).size.height / 100 * 10,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                const Icon(
-                  Icons.ac_unit_sharp,
-                  size: 25,
-                ),
-
-                const Text(
-                  'Level',
-                  style: TextStyle(fontSize: 25),
+                Row(),
+                Row(
+                  children: const [
+                    Icon(
+                      Icons.ac_unit_sharp,
+                      size: 35,
+                    ),
+                    Text(
+                      'Level',
+                      style: TextStyle(fontSize: 35),
+                    ),
+                  ],
                 ),
 
                 // ref.watch(mqttStatusNotifier)!
-                mqttStatus!
-                    ? const Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                      )
-                    : ElevatedButton(
-                        onPressed: () async {
-                          // ref.refresh(mqttServicesProvider);
-                          ref.read(mqttServicesProvider).init();
-                          // isInit = true;
-                        },
-                        child: const Text('connect')),
+
+                Container(
+                  child: mqttStatus!
+                      ? const Icon(
+                          Icons.check_circle,
+                          color: Colors.green,
+                          size: 35,
+                        )
+                      : ElevatedButton(
+                          onPressed: () async {
+                            // ref.refresh(mqttServicesProvider);
+                            ref.read(mqttServicesProvider).init();
+                            // isInit = true;
+                          },
+                          child: const Text('connect')),
+                ),
               ],
             ),
           ),
@@ -93,7 +101,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                     itemCount: data.length,
                     itemBuilder: (BuildContext context, int index) {
                       // Color levelColor = Colors.red;
-                      return LevelCard(data: data[index]);
+                      return Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: LevelCard(data: data[index]),
+                      );
                     }),
               );
             },

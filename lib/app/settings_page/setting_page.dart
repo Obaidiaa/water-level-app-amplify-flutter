@@ -44,15 +44,15 @@ class _SettingPageState extends ConsumerState<SettingPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
                   Icon(
                     Icons.settings,
-                    size: 25,
+                    size: 35,
                   ),
                   Text(
                     'Settings',
-                    style: TextStyle(fontSize: 25),
+                    style: TextStyle(fontSize: 35),
                   )
                 ],
               ),

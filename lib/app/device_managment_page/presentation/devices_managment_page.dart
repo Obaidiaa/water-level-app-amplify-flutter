@@ -52,12 +52,15 @@ class _DevicesManagmentPageState extends ConsumerState<DevicesManagmentPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'Devices',
-                      style: TextStyle(fontSize: 25),
-                    ),
+                  Row(),
+                  Row(
+                    children: const [
+                      Icon(Icons.device_hub, size: 35),
+                      Text(
+                        'Devices',
+                        style: TextStyle(fontSize: 35),
+                      ),
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 20.0),

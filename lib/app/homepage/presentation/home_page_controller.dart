@@ -20,7 +20,7 @@ class HomePageController extends _$HomePageController {
 
   initMQTT() {
     ref.read(mqttServicesProvider).init();
-    var period = const Duration(seconds: 15);
+    var period = const Duration(seconds: 60);
     Timer.periodic(period, (arg) {
       refreshData();
     });
