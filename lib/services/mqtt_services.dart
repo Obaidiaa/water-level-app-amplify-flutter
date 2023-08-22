@@ -19,7 +19,7 @@ final devicesLevelData = StateProvider<Map<String, List<dynamic>>>((ref) => {});
 
 // Map<String, dynamic> devicesLevelData = {};
 
-final mqttStatusNotifier = StateProvider<bool?>((ref) => false);
+final mqttStatusNotifier = StateProvider<int?>((ref) => 0);
 
 class MqttServices {
   // MqttServices(this.ref);
@@ -126,6 +126,7 @@ class MqttServices {
 
     /// Add the successful connection callback if you need one.
     /// This will be called after [onAutoReconnect] but before [onAutoReconnected]
+
     client.onConnected = onConnected;
 
     client.onDisconnected = onDisconnected;
@@ -139,12 +140,13 @@ class MqttServices {
 
     try {
       print('MQTT client connecting to AWS IoT using cognito....');
+      ref.read(mqttStatusNotifier.notifier).state = 1;
       await client.connect();
-      ref.read(mqttStatusNotifier.notifier).state = true;
+      ref.read(mqttStatusNotifier.notifier).state = 2;
     } on Exception catch (e) {
       print('MQTT client exception - $e');
       client.disconnect();
-      ref.read(mqttStatusNotifier.notifier).state = false;
+      ref.read(mqttStatusNotifier.notifier).state = 0;
     }
 
     if (client.connectionStatus!.state == MqttConnectionState.connected) {
@@ -196,7 +198,7 @@ class MqttServices {
       print(
           'ERROR MQTT client connection failed - disconnecting, state is ${client.connectionStatus!.state}');
       client.disconnect();
-      ref.read(mqttStatusNotifier.notifier).state = false;
+      ref.read(mqttStatusNotifier.notifier).state = 0;
     }
 
     print('Sleeping....');
@@ -223,14 +225,14 @@ class MqttServices {
   void onConnected() {
     print(
         'EXAMPLE::OnConnected client callback - Client connection was successful');
-    ref.read(mqttStatusNotifier.notifier).state = true;
+    ref.read(mqttStatusNotifier.notifier).state = 1;
   }
 
   /// The unsolicited disconnect callback
   void onDisconnected() {
     print(
         'EXAMPLE::OnDisconnected client callback - Client disconnection was unsolicited');
-    ref.read(mqttStatusNotifier.notifier).state = false;
+    ref.read(mqttStatusNotifier.notifier).state = 0;
   }
 
   Future fetchCognitoAuthSession() async {
