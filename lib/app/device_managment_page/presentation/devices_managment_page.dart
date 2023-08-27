@@ -82,54 +82,6 @@ class _DevicesManagmentPageState extends ConsumerState<DevicesManagmentPage> {
                         showDialog(
                             context: context,
                             builder: (contextd) => const AddDeviceDialog());
-                        // ref
-                        // .read(deviceManagmentControllerProvider.notifier)
-                        // .claimDevice('010');
-                        // ref.read(isloadingPro.notifier).state = true;
-                        // await _scanQRCode();
-                        //
-                        // final d = await ref
-                        //     .watch(deviceManagementServicesProvider)
-                        //     .claimDevice(_qrCodeResult);
-                        //
-                        // d.when(
-                        //     data: (data) {
-                        //       print(data);
-                        //       // ref.read(isloadingPro.notifier).state = false;
-                        //       // ref
-                        //       //     .read(deviceManagementViewModelProvider
-                        //       //         .notifier)
-                        //       //     .getDevices();
-                        //       ref
-                        //           .read(graphqlServices)
-                        //           .attachPolicy("")
-                        //           .then((value) => print(value));
-                        //       ScaffoldMessenger.of(context)
-                        //           .showSnackBar(SnackBar(
-                        //         content: Text("${data.message}"),
-                        //         backgroundColor: Colors.green,
-                        //       ));
-                        //       // Navigator.of(context).pop();
-                        //     },
-                        //     error: (erro, stackTrace) {
-                        //       // ref.read(isloadingPro.notifier).state = false;
-                        //       List err = erro as List<GraphQLResponseError>;
-                        //       // ref.read(errorPro.notifier).state =
-                        //       //     err.first.message;
-                        //       ScaffoldMessenger.of(context)
-                        //           .showSnackBar(SnackBar(
-                        //         content: Text(err.first.message.toString()),
-                        //         backgroundColor: Colors.red,
-                        //       ));
-                        //     },
-                        //     loading: () => const CircularProgressIndicator());
-                        // AddDevicePage.show(context);
-                        // _dialogBuilder(context);
-                        // ref
-                        //     .read(deviceManagementViewModelProvider.notifier)
-                        //     .add(1, 1, 1, 1, "", "", "Test Device");
-                        // AddDevicePage.show(context);
-                        // DeviceSetupPage.show(context);
                       },
                     ),
                   )
@@ -137,10 +89,6 @@ class _DevicesManagmentPageState extends ConsumerState<DevicesManagmentPage> {
               ),
             ),
           ),
-          // ref.watch(isloadingPro)!
-          // Container(
-          //     child: CircularProgressIndicator(),
-          //   )
           Padding(
             padding: EdgeInsets.all(8.0.sp),
             child: Column(
@@ -250,7 +198,7 @@ class AddDeviceDialog extends HookConsumerWidget {
                 ListBody(
                   children: useQRCode.value
                       ? [
-                          Container(
+                          SizedBox(
                             height: 250,
                             width: 250,
                             child: ReaderWidget(

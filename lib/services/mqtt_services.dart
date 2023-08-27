@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:water_level_flutter/app/device_managment_page/domain/Device.dart';
+import 'package:water_level_flutter/app/settings_page/data/settings_repository.dart';
+import 'package:water_level_flutter/models/AttachPolicyToUserRes.dart';
 import 'package:water_level_flutter/packages/mqtt_aws_iot.dart';
 
 final mqttServicesProvider = Provider<MqttServices>((ref) {
@@ -143,6 +145,10 @@ class MqttServices {
       ref.read(mqttStatusNotifier.notifier).state = 2;
     } on Exception catch (e) {
       print('MQTT client exception - $e');
+      if (e.toString().contains('NoConnectionException')) {
+        print('MQTT client connecting....');
+        ref.read(settingsRepositoryProvider).attachPolicy(identityId);
+      }
       client.disconnect();
       ref.read(mqttStatusNotifier.notifier).state = 0;
     }
