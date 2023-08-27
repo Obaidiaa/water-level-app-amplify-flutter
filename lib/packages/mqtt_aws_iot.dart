@@ -6,12 +6,6 @@
  *
  */
 
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:mqtt_client/mqtt_client.dart';
-import 'package:http/http.dart';
 import 'package:sigv4/sigv4.dart';
 
 /// An example of connecting to the AWS IoT Core MQTT broker and publishing to a devices topic.

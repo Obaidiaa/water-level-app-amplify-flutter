@@ -4,7 +4,6 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:water_level_flutter/models/AttachPolicyToUserRes.dart';
 import 'package:water_level_flutter/models/ModelProvider.dart';
 
 final graphqlServices = Provider<GraphqlServices>((ref) {

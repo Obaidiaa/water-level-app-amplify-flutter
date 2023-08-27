@@ -1,19 +1,15 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:water_level_flutter/app/device_managment_page/domain/Device.dart';
 import 'package:water_level_flutter/app/device_managment_page/presentation/device_page/device_edit_controller.dart';
 import 'package:water_level_flutter/app/homepage/application/devices_service.dart';
 import 'package:water_level_flutter/app/util/async_value_ui.dart';
-import 'package:water_level_flutter/routing/app_router.dart';
-import 'package:water_level_flutter/services/device_managment_services.dart';
 
 class DeviceEditPage extends ConsumerStatefulWidget {
-  DeviceEditPage({key, required this.device}) : super(key: key);
-  Device device;
+  const DeviceEditPage({key, required this.device}) : super(key: key);
+  final Device device;
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _DeviceEditPageState();
 }
@@ -61,10 +57,10 @@ class _DeviceEditPageState extends ConsumerState<DeviceEditPage> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).primaryColor,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
+                      color: Theme.of(context).shadowColor.withOpacity(0.5),
                       spreadRadius: 0,
                       blurRadius: 7,
                       offset:

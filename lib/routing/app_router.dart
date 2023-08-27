@@ -1,6 +1,5 @@
 // // app routes
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/gen/flutterblueplus.pbjson.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:water_level_flutter/app/device_managment_page/domain/Device.dart';

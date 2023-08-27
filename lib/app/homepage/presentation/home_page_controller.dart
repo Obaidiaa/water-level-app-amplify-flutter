@@ -1,10 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:water_level_flutter/app/device_managment_page/data/device_repository.dart';
-import 'package:water_level_flutter/app/device_managment_page/domain/Device.dart';
 import 'package:water_level_flutter/app/homepage/application/devices_service.dart';
 import 'package:water_level_flutter/services/mqtt_services.dart';
 

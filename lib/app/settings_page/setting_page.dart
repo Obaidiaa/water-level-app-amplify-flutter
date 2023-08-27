@@ -2,9 +2,6 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:water_level_flutter/app/settings_page/setting_page_model_view.dart';
-import 'package:water_level_flutter/services/datastore_services.dart';
-import 'package:water_level_flutter/services/user_management_services.dart';
 
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({Key? key}) : super(key: key);
@@ -29,10 +26,10 @@ class _SettingPageState extends ConsumerState<SettingPage> {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).primaryColor,
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
+                color: Theme.of(context).shadowColor.withOpacity(0.5),
                 spreadRadius: 0,
                 blurRadius: 7,
                 offset: Offset(0, 0.75), // changes position of shadow
@@ -45,14 +42,15 @@ class _SettingPageState extends ConsumerState<SettingPage> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Icon(
                     Icons.settings,
-                    size: 35,
+                    size: Theme.of(context).textTheme.titleMedium!.fontSize!,
                   ),
                   Text(
                     'Settings',
-                    style: TextStyle(fontSize: 35),
+                    style: Theme.of(context).textTheme.titleMedium,
+                    // style: TextStyle(fontSize: 35),
                   )
                 ],
               ),

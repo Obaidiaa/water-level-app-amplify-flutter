@@ -1,11 +1,8 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:water_level_flutter/app/device_managment_page/presentation/device_managment_controller.dart';
 
 import 'package:water_level_flutter/models/ModelProvider.dart';
 import 'package:water_level_flutter/services/auth_services.dart';
-import 'package:water_level_flutter/services/device_management_notifier.dart';
 import 'package:water_level_flutter/services/graphql_services.dart';
 
 final deviceManagementServicesProvider =

@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -12,6 +10,7 @@ import 'package:water_level_flutter/app/homepage/application/devices_service.dar
 import 'package:water_level_flutter/app/homepage/presentation/home_page_controller.dart';
 import 'package:water_level_flutter/packages/time_ago_since_now.dart';
 import 'package:water_level_flutter/services/mqtt_services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -37,10 +36,10 @@ class _HomePageState extends ConsumerState<HomePage> {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).primaryColor,
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
+                color: Theme.of(context).shadowColor.withOpacity(0.5),
                 spreadRadius: 0,
                 blurRadius: 7,
                 offset: const Offset(0, 0.75), // changes position of shadow
@@ -50,32 +49,37 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: SizedBox(
             height: MediaQuery.of(context).size.height / 100 * 10,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(),
                 Row(
-                  children: const [
+                  children: [
                     Icon(
                       Icons.ac_unit_sharp,
-                      size: 35,
+                      // size: 35.sp,
+                      size: Theme.of(context).textTheme.titleMedium!.fontSize,
                     ),
                     Text(
                       'Level',
-                      style: TextStyle(fontSize: 35),
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ],
                 ),
 
                 // ref.watch(mqttStatusNotifier)!
 
-                Container(
+                Padding(
+                  padding: EdgeInsets.only(right: 20.0.sp),
                   child: mqttStatus! == 1
                       ? const CircularProgressIndicator()
                       : mqttStatus == 2
-                          ? const Icon(
+                          ? Icon(
                               Icons.check_circle,
                               color: Colors.green,
-                              size: 35,
+                              size: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .fontSize,
                             )
                           : ElevatedButton(
                               onPressed: () async {
@@ -106,7 +110,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   itemBuilder: (BuildContext context, int index) {
                     // Color levelColor = Colors.red;
                     return Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: EdgeInsets.only(top: 8.0.sp),
                       child: LevelCard(data: data[index] as Device),
                     );
                   }),
@@ -192,18 +196,24 @@ class LevelCard extends HookConsumerWidget {
                         alignment: FractionalOffset.center,
                         child: Card(
                           elevation: 5,
-                          child: Column(
+                          child: Flex(
+                            direction: Axis.vertical,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.only(top: 5),
-                                  child: Text(
-                                    data.thingName ?? 'No Name',
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 25,
+                                  padding: EdgeInsets.only(top: 5.sp),
+                                  child: FittedBox(
+                                    child: Text(
+                                      data.thingName ?? 'No Name',
+                                      // overflow: TextOverflow.ellipsis,
+                                      // style: TextStyle(
+                                      // fontSize: Theme.of(context)
+                                      //     .textTheme
+                                      //     .titleMedium!
+                                      //     .fontSize,
+                                      // ),
                                     ),
                                   ),
                                 ),
@@ -214,32 +224,18 @@ class LevelCard extends HookConsumerWidget {
                               Center(
                                 child: Text(
                                   data.serialNumber,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                  ),
+                                  // style: TextStyle(
+                                  //   fontSize: 15.sp,
+                                  // ),
                                 ),
                               ),
-                              Consumer(
-                                builder: (context, ref, child) {
-                                  if (h < 0) {
-                                    h = 0;
-                                  }
-                                  return Column(
-                                    children: [
-                                      Text(
-                                        '${h.toStringAsFixed(2)} CM / ${max.toStringAsFixed(2)} CM',
-                                        style: const TextStyle(fontSize: 15),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Last Update:  $t',
-                                          style: const TextStyle(fontSize: 15),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
+                              Text(
+                                '${h.toStringAsFixed(2)} CM / ${max.toStringAsFixed(2)} CM',
+                                // style: TextStyle(fontSize: 15.sp),
+                              ),
+                              Text(
+                                'Last Update:  $t',
+                                // style: TextStyle(fontSize: 15.sp),
                               ),
                             ],
                           ),
@@ -247,80 +243,97 @@ class LevelCard extends HookConsumerWidget {
                       )
                     : Card(
                         elevation: 5,
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
+                        child: Flex(
+                          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          direction: Axis.vertical,
+                          children: [
+                            Flexible(
+                              fit: FlexFit.tight,
+                              flex: 2,
+                              child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Flexible(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        data.thingName ?? 'No Name',
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 25,
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.0.sp),
+                                        child: Text(
+                                          data.thingName ?? 'No Name',
+                                          overflow: TextOverflow.ellipsis,
+                                          // style: TextStyle(
+                                          //   fontSize: 18.sp,
+                                          // ),
                                         ),
                                       ),
                                     ),
                                   ),
                                   IconButton(
-                                      onPressed: () {},
-                                      icon: const Icon(Icons.history))
+                                    onPressed: () {},
+                                    icon: Icon(
+                                      Icons.history,
+                                      // size: 18.sp,
+                                    ),
+                                  )
                                 ],
                               ),
-                              Consumer(
-                                builder: (context, ref, child) {
-                                  if (h < 0) {
-                                    h = 0;
-                                  }
-                                  return Column(
-                                    children: [
-                                      CircularPercentIndicator(
-                                        radius: 50.0,
-                                        lineWidth: 15.0,
-                                        percent: h / max > 1 ? 1 : h / max,
-                                        center: Text(
-                                          '${(h / max * 100).toStringAsFixed(0)}%',
-                                          style: const TextStyle(fontSize: 25),
-                                        ),
-                                        progressColor: color,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(left: 10),
-                                            child: Consumer(
-                                                builder: (context, ref, child) {
-                                              ref.watch(timeProvider);
-                                              return Text(t != 'No Data'
-                                                  ? TimeAgoSinceNow()
-                                                      .timeAgoSinceDate(
-                                                          t.toString())
-                                                  : 'No Data');
-                                            }),
-                                          ),
-                                          IconButton(
-                                            onPressed: () => ref
-                                                .read(mqttServicesProvider)
-                                                .getCurrentData(
-                                                    data.serialNumber),
-                                            icon: const Icon(Icons.refresh),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                },
+                            ),
+                            Flexible(
+                              fit: FlexFit.tight,
+                              flex: 6,
+                              child: FittedBox(
+                                child: CircularPercentIndicator(
+                                  radius: 45,
+                                  animation: true,
+                                  lineWidth: 15.0,
+                                  percent: h / max > 1
+                                      ? 1
+                                      : h / max < 0
+                                          ? 0
+                                          : h / max,
+                                  center: Text(
+                                    '${(h / max * 100).toStringAsFixed(0)}%',
+                                    style: const TextStyle(fontSize: 25),
+                                  ),
+                                  progressColor: color,
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                            Flexible(
+                              fit: FlexFit.tight,
+                              flex: 2,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Consumer(builder: (context, ref, child) {
+                                    ref.watch(timeProvider);
+                                    return Padding(
+                                      padding: EdgeInsets.all(8.0.sp),
+                                      child: Text(
+                                        t != 'No Data'
+                                            ? TimeAgoSinceNow()
+                                                .timeAgoSinceDate(t.toString())
+                                            : 'No Data',
+                                        overflow: TextOverflow.ellipsis,
+                                        // style: TextStyle(fontSize: 12.sp),
+                                      ),
+                                    );
+                                  }),
+                                  IconButton(
+                                    onPressed: () => ref
+                                        .read(mqttServicesProvider)
+                                        .getCurrentData(data.serialNumber),
+                                    icon: const Icon(
+                                      Icons.refresh,
+                                      // size: 25.sp,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       )),
           );

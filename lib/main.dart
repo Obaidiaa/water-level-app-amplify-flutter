@@ -4,15 +4,14 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:form_builder_validators/localization/l10n.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 // Amplify Flutter Packages
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:water_level_flutter/routing/app_router.dart';
 // import 'package:amplify_datastore/amplify_datastore.dart';
-
+import 'package:device_preview/device_preview.dart';
 // Generated in previous step
 import 'models/ModelProvider.dart';
 import 'amplifyconfiguration.dart';
@@ -39,10 +38,15 @@ Future<void> main() async {
   final container = ProviderContainer(
     overrides: [],
   );
-  runApp(UncontrolledProviderScope(
-    container: container,
-    child: const MyApp(),
-  ));
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => UncontrolledProviderScope(
+        container: container,
+        child: const MyApp(),
+      ),
+    ),
+  );
 }
 
 Future<void> _configureAmplify() async {
@@ -96,26 +100,59 @@ class MyApp extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
 
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Authenticator(
-      child: MaterialApp.router(
-        title: "Water Level BLE",
-        builder: Authenticator.builder(),
+      child: ScreenUtilInit(
+        designSize: const Size(360, 690),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        // Use builder only if you need to use library outside ScreenUtilInit context
+        builder: (context, child) => MaterialApp.router(
+          title: "Water Level BLE",
+          builder: Authenticator.builder(),
 
-        routerConfig: router,
+          routerConfig: router,
+          theme: ThemeData(
+            // Define the default brightness and colors.
+            brightness: isDarkMode ? Brightness.dark : Brightness.light,
+            primaryColor: isDarkMode ? Colors.grey[800] : Colors.white,
 
-        // home: SafeArea(
-        //   child: Scaffold(
-        //     body: Column(
-        //       mainAxisAlignment: MainAxisAlignment.center,
-        //       children: const [
-        //         Center(
-        //           child: Text('Amplify Not configured'),
-        //         )
-        //       ],
-        //     ),
-        //   ),
-        // ),
-        debugShowCheckedModeBanner: false,
+            // Define the default font family.
+            fontFamily: 'Roboto',
+
+            // Define the default `TextTheme`. Use this to specify the default
+            // text styling for headlines, titles, bodies of text, and more.
+            textTheme: TextTheme(
+              displayLarge:
+                  TextStyle(fontSize: 72.sp, fontWeight: FontWeight.bold),
+              titleLarge: TextStyle(fontSize: 36.sp),
+              displayMedium: TextStyle(fontSize: 60.sp, fontFamily: 'Roboto'),
+              titleMedium: TextStyle(fontSize: 24.sp, fontFamily: 'Roboto'),
+              displaySmall: TextStyle(fontSize: 30.sp, fontFamily: 'Roboto'),
+              titleSmall: TextStyle(fontSize: 18.sp, fontFamily: 'Roboto'),
+              bodyLarge: TextStyle(fontSize: 18.sp, fontFamily: 'Roboto'),
+              bodyMedium: TextStyle(fontSize: 14.sp, fontFamily: 'Roboto'),
+            ),
+            iconTheme: IconThemeData(
+              color: isDarkMode ? Colors.white : Colors.grey[800],
+              size: 20.sp,
+            ),
+          ),
+          // home: SafeArea(
+          //   child: Scaffold(
+          //     body: Column(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: const [
+          //         Center(
+          //           child: Text('Amplify Not configured'),
+          //         )
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          debugShowCheckedModeBanner: false,
+        ),
       ),
     );
 

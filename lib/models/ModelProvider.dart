@@ -21,7 +21,6 @@
 
 import 'package:amplify_core/amplify_core.dart';
 import '../app/device_managment_page/domain/Device.dart';
-import '../app/device_managment_page/domain/Device.dart';
 import 'ThingOwnerManagerRes.dart';
 
 export '../app/device_managment_page/domain/Device.dart';

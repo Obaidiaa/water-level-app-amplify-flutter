@@ -6,8 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:water_level_flutter/app/device_managment_page/domain/Device.dart';
-import 'package:water_level_flutter/app/homepage/application/devices_service.dart';
-import 'package:water_level_flutter/main.dart';
 import 'package:water_level_flutter/packages/mqtt_aws_iot.dart';
 
 final mqttServicesProvider = Provider<MqttServices>((ref) {

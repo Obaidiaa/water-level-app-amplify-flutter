@@ -1,8 +1,6 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:riverpod/src/framework.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:water_level_flutter/app/auth/domain/User.dart';
 
 part 'auth_repository.g.dart';
 

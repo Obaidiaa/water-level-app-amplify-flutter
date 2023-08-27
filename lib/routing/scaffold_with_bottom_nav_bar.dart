@@ -25,7 +25,7 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    // final size = MediaQuery.of(context).size;
     // if (size.width < 450) {
     return ScaffoldWithBottomNavBar(
       body: navigationShell,

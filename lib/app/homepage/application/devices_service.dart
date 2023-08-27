@@ -2,8 +2,6 @@ import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:water_level_flutter/app/device_managment_page/data/device_repository.dart';
 import 'package:water_level_flutter/app/device_managment_page/domain/Device.dart';
-import 'package:water_level_flutter/app/device_managment_page/presentation/device_managment_controller.dart';
-import 'package:water_level_flutter/app/device_managment_page/presentation/device_page/device_edit_controller.dart';
 
 part 'devices_service.g.dart';
 
