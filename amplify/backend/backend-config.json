@@ -78,11 +78,6 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "IoTToS3": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
     "ThingOwnerManager": {
       "build": true,
       "providerPlugin": "awscloudformation",
@@ -103,22 +98,6 @@
         {
           "category": "function",
           "resourceName": "AttachPolicyToUser"
-        }
-      ]
-    },
-    "AMPLIFY_function_IoTToS3_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "IoTToS3"
-        }
-      ]
-    },
-    "AMPLIFY_function_IoTToS3_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "IoTToS3"
         }
       ]
     },

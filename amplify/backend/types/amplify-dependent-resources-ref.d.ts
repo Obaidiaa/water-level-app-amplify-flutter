@@ -28,13 +28,6 @@ export type AmplifyDependentResourcesAttributes = {
       "Name": "string",
       "Region": "string"
     },
-    "IoTToS3": {
-      "Arn": "string",
-      "LambdaExecutionRole": "string",
-      "LambdaExecutionRoleArn": "string",
-      "Name": "string",
-      "Region": "string"
-    },
     "ThingOwnerManager": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
