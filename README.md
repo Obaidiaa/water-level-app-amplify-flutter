@@ -25,4 +25,4 @@ This app uses AWS Amplify serverless cloud architecture.
 ## To Do:
 1. Get historical data from Timestream.
 
-Maybe there are things I forgot to write here if you encounter any issues reported.
+Maybe there are things I forgot to write here if you encounter any issues report it.
