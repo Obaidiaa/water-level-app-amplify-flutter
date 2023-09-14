@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:water_level_flutter/app/device_managment_page/domain/Device.dart';
@@ -32,98 +34,71 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     final state = ref.watch(devicesListFutureProvider);
     final mqttStatus = ref.watch(mqttStatusNotifier);
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).shadowColor.withOpacity(0.5),
-                spreadRadius: 0,
-                blurRadius: 7,
-                offset: const Offset(0, 0.75), // changes position of shadow
-              ),
-            ],
-          ),
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height / 100 * 10,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.ac_unit_sharp,
-                      // size: 35.sp,
-                      size: Theme.of(context).textTheme.titleMedium!.fontSize,
-                    ),
-                    Text(
-                      'Level',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ],
-                ),
 
-                // ref.watch(mqttStatusNotifier)!
-
-                Padding(
-                  padding: EdgeInsets.only(right: 20.0.sp),
-                  child: mqttStatus! == 1
-                      ? const CircularProgressIndicator()
-                      : mqttStatus == 2
-                          ? Icon(
-                              Icons.check_circle,
-                              color: Colors.green,
-                              size: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .fontSize,
-                            )
-                          : ElevatedButton(
-                              onPressed: () async {
-                                // ref.refresh(mqttServicesProvider);
-                                ref.read(mqttServicesProvider).init();
-                                // isInit = true;
-                              },
-                              child: const Text('connect')),
-                ),
-              ],
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          mqttStatus! == 1
+              ? const Padding(
+                  padding: EdgeInsets.all(6.0),
+                  child: CircularProgressIndicator(),
+                )
+              : mqttStatus == 2
+                  ? IconButton(
+                      onPressed: () async {
+                        ref.read(mqttServicesProvider).disconnect();
+                      },
+                      icon: const Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.green,
+                      ),
+                    )
+                  : IconButton(
+                      onPressed: () async {
+                        ref.read(mqttServicesProvider).init();
+                      },
+                      icon: const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                      ),
+                    ),
+        ],
+        leading: const Icon(Icons.home_outlined),
+        title: const Center(
+          child: Text(
+            'Level',
           ),
         ),
-        // ElevatedButton(
-        //     onPressed: () => ref.read(mqttServicesProvider).disconnect(),
-        //     child: const Text('disconnect')),
-        state.when(
-          data: (data) {
-            if (mqttStatus == 2) {
-              ref.read(mqttServicesProvider).getAllDeviceData(data);
-            }
-            return Expanded(
-              child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
-                  itemCount: data.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    // Color levelColor = Colors.red;
-                    return Padding(
-                      padding: EdgeInsets.only(top: 8.0.sp),
-                      child: LevelCard(data: data[index] as Device),
-                    );
-                  }),
-            );
-          },
-          error: ((error, stackTrace) {
-            return Text('Error $error');
-          }),
-          loading: (() => const Expanded(
-                child: Center(child: CircularProgressIndicator()),
-              )),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: state.when(
+            data: (data) {
+              if (mqttStatus == 2) {
+                // ref.read(mqttServicesProvider).getAllDeviceData(data);
+              }
+              final rowSizes = List.generate(data.length ~/ 2, (_) => auto);
+
+              return LayoutGrid(
+                columnSizes: [
+                  1.fr,
+                  1.fr,
+                ],
+                rowSizes: [auto, ...rowSizes],
+                children: data
+                    .map((e) => LevelCard(
+                          data: e as Device,
+                        ))
+                    .toList(),
+              );
+            },
+            error: ((error, stackTrace) {
+              return Text('Error $error');
+            }),
+            loading: (() => const Center(child: CircularProgressIndicator())),
+          ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -170,51 +145,48 @@ class LevelCard extends HookConsumerWidget {
       color = Colors.red;
     }
 
-    return InkWell(
-      onTap: () async {
-        if (cardController.isCompleted) {
-          await cardController.reverse();
-        } else {
-          await cardController.forward();
-        }
-      },
-      child: AnimatedBuilder(
-        animation: cardController,
-        builder: (BuildContext context, Widget? child) {
-          return Transform(
-            transform: Matrix4.identity()
-              ..setEntry(3, 2, 0.0015)
-              ..rotateY(3.14 * animation.value),
-            alignment: FractionalOffset.center,
-            child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                child: animation.value >= 0.5
-                    ? Transform(
-                        transform: Matrix4.identity()
-                          ..setEntry(3, 2, 0.0015)
-                          ..rotateY(3.14),
-                        alignment: FractionalOffset.center,
-                        child: Card(
-                          elevation: 5,
+    return AnimatedBuilder(
+      animation: cardController,
+      builder: (BuildContext context, Widget? child) {
+        return Transform(
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.0015)
+            ..rotateY(3.14 * animation.value),
+          alignment: FractionalOffset.center,
+          child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: animation.value >= 0.5
+                  ? Transform(
+                      transform: Matrix4.identity()
+                        ..setEntry(3, 2, 0.0015)
+                        ..rotateY(3.14),
+                      alignment: FractionalOffset.center,
+                      child: Card(
+                        // elevation: 5,
+                        child: InkWell(
+                          onTap: () async {
+                            if (cardController.isCompleted) {
+                              await cardController.reverse();
+                            } else {
+                              await cardController.forward();
+                            }
+                          },
                           child: Flex(
                             direction: Axis.vertical,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Center(
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 5.sp),
-                                  child: FittedBox(
-                                    child: Text(
-                                      data.thingName ?? 'No Name',
-                                      // overflow: TextOverflow.ellipsis,
-                                      // style: TextStyle(
-                                      // fontSize: Theme.of(context)
-                                      //     .textTheme
-                                      //     .titleMedium!
-                                      //     .fontSize,
-                                      // ),
-                                    ),
+                                child: FittedBox(
+                                  child: Text(
+                                    data.thingName ?? 'No Name',
+                                    // overflow: TextOverflow.ellipsis,
+                                    // style: TextStyle(
+                                    // fontSize: Theme.of(context)
+                                    //     .textTheme
+                                    //     .titleMedium!
+                                    //     .fontSize,
+                                    // ),
                                   ),
                                 ),
                               ),
@@ -240,16 +212,26 @@ class LevelCard extends HookConsumerWidget {
                             ],
                           ),
                         ),
-                      )
-                    : Card(
-                        elevation: 5,
-                        child: Flex(
+                      ),
+                    )
+                  : Card(
+                      clipBehavior: Clip.hardEdge,
+                      // elevation: 5,
+                      child: InkWell(
+                        splashColor: Colors.blue.withAlpha(30),
+                        onTap: () async {
+                          if (cardController.isCompleted) {
+                            await cardController.reverse();
+                          } else {
+                            await cardController.forward();
+                          }
+                        },
+                        child: Column(
                           // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          direction: Axis.vertical,
+                          // direction: Axis.vertical,
                           children: [
-                            Flexible(
-                              fit: FlexFit.tight,
-                              flex: 2,
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -257,21 +239,21 @@ class LevelCard extends HookConsumerWidget {
                                   Flexible(
                                     child: SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0.sp),
-                                        child: Text(
-                                          data.thingName ?? 'No Name',
-                                          overflow: TextOverflow.ellipsis,
-                                          // style: TextStyle(
-                                          //   fontSize: 18.sp,
-                                          // ),
-                                        ),
+                                      child: Text(
+                                        data.thingName ?? 'No Name',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineSmall!,
+                                        // style: TextStyle(
+                                        //   fontSize: 18.sp,
+                                        // ),
                                       ),
                                     ),
                                   ),
                                   IconButton(
                                     onPressed: () {},
-                                    icon: Icon(
+                                    icon: const Icon(
                                       Icons.history,
                                       // size: 18.sp,
                                     ),
@@ -279,48 +261,42 @@ class LevelCard extends HookConsumerWidget {
                                 ],
                               ),
                             ),
-                            Flexible(
-                              fit: FlexFit.tight,
-                              flex: 6,
-                              child: FittedBox(
-                                child: CircularPercentIndicator(
-                                  radius: 45,
-                                  animation: true,
-                                  lineWidth: 15.0,
-                                  percent: h / max > 1
-                                      ? 1
-                                      : h / max < 0
-                                          ? 0
-                                          : h / max,
-                                  center: Text(
-                                    '${(h / max * 100).toStringAsFixed(0)}%',
-                                    style: const TextStyle(fontSize: 25),
-                                  ),
-                                  progressColor: color,
-                                ),
+                            CircularPercentIndicator(
+                              radius: 60,
+                              animation: true,
+                              lineWidth: 15.0,
+                              percent: h / max > 1
+                                  ? 1
+                                  : h / max < 0
+                                      ? 0
+                                      : h / max,
+                              center: Text(
+                                '${(h / max * 100).toStringAsFixed(0)}%',
+                                style: const TextStyle(fontSize: 25),
                               ),
+                              progressColor: color,
                             ),
-                            Flexible(
-                              fit: FlexFit.tight,
-                              flex: 2,
+                            // const Divider(),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Consumer(builder: (context, ref, child) {
-                                    ref.watch(timeProvider);
-                                    return Padding(
-                                      padding: EdgeInsets.all(8.0.sp),
-                                      child: Text(
+                                  Flexible(
+                                    child: Consumer(
+                                        builder: (context, ref, child) {
+                                      ref.watch(timeProvider);
+                                      return Text(
                                         t != 'No Data'
                                             ? TimeAgoSinceNow()
                                                 .timeAgoSinceDate(t.toString())
                                             : 'No Data',
                                         overflow: TextOverflow.ellipsis,
                                         // style: TextStyle(fontSize: 12.sp),
-                                      ),
-                                    );
-                                  }),
+                                      );
+                                    }),
+                                  ),
                                   IconButton(
                                     onPressed: () => ref
                                         .read(mqttServicesProvider)
@@ -335,10 +311,10 @@ class LevelCard extends HookConsumerWidget {
                             ),
                           ],
                         ),
-                      )),
-          );
-        },
-      ),
+                      ),
+                    )),
+        );
+      },
     );
   }
 }

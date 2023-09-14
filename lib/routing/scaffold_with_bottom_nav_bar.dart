@@ -55,31 +55,29 @@ class ScaffoldWithBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: body,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: currentIndex,
-          destinations: const [
-            // products
-            NavigationDestination(
-              icon: Icon(Icons.home),
-              selectedIcon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.device_hub),
-              selectedIcon: Icon(Icons.device_hub_sharp),
-              label: 'Devices',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings),
-              selectedIcon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
-          onDestinationSelected: onDestinationSelected,
-        ),
+    return Scaffold(
+      body: body,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: currentIndex,
+        destinations: const [
+          // products
+          NavigationDestination(
+            icon: Icon(Icons.home),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.device_hub),
+            selectedIcon: Icon(Icons.device_hub_sharp),
+            label: 'Devices',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings),
+            selectedIcon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+        onDestinationSelected: onDestinationSelected,
       ),
     );
   }

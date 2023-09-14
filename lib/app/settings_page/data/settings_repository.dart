@@ -7,6 +7,19 @@ import 'package:water_level_flutter/models/AttachPolicyToUserRes.dart';
 part 'settings_repository.g.dart';
 
 class SettingsRepository {
+  Future<List<AuthUserAttribute>> fetchCurrentUserAttributes() async {
+    try {
+      final result = await Amplify.Auth.fetchUserAttributes();
+      for (final element in result) {
+        safePrint('key: ${element.userAttributeKey}; value: ${element.value}');
+      }
+      return result;
+    } on AuthException catch (e) {
+      safePrint('Error fetching user attributes: ${e.message}');
+      throw e.message;
+    }
+  }
+
   Future attachPolicy(String id) async {
     const attachPolicyToUser = 'AttachPolicyToUser';
     String graphQLDocument = '''query AttachPolicyToUser {
@@ -46,4 +59,12 @@ class SettingsRepository {
 @Riverpod(keepAlive: true)
 SettingsRepository settingsRepository(SettingsRepositoryRef ref) {
   return SettingsRepository();
+}
+
+@riverpod
+Future<List<AuthUserAttribute>> fetchCurrentUserAttributesFuture(
+    FetchCurrentUserAttributesFutureRef ref) async {
+  final repository = ref.read(settingsRepositoryProvider);
+  final result = await repository.fetchCurrentUserAttributes();
+  return result;
 }

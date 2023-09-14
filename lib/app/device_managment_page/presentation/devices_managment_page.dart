@@ -35,102 +35,67 @@ class _DevicesManagmentPageState extends ConsumerState<DevicesManagmentPage> {
     );
 
     return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).shadowColor.withOpacity(0.5),
-                  spreadRadius: 0,
-                  blurRadius: 7,
-                  offset: const Offset(0, 0.75), // changes position of shadow
-                ),
-              ],
-            ),
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height / 100 * 10,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.device_hub,
-                        size: Theme.of(context).textTheme.titleMedium!.fontSize,
-                        // size: 35.sp,
-                      ),
-                      Text(
-                        'Devices',
-                        style: Theme.of(context).textTheme.titleMedium,
-                        // style: TextStyle(fontSize: 35.sp),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(right: 20.0.sp),
-                    child: InkWell(
-                      child: Icon(
-                        Icons.add,
-                        size: Theme.of(context).textTheme.titleMedium!.fontSize,
-
-                        // size: 40.sp,
-                      ),
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (contextd) => const AddDeviceDialog());
-                      },
-                    ),
-                  )
-                ],
-              ),
-            ),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        leading: const Icon(
+          Icons.device_hub,
+        ),
+        title: const Center(
+          child: Text(
+            'Devices',
           ),
-          Padding(
-            padding: EdgeInsets.all(8.0.sp),
-            child: Column(
-              children: state.when(
-                  data: (data) {
-                    return data
-                        .map(
-                          (e) => ListTile(
-                            leading: Icon(Icons.water_drop_outlined),
-                            title: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Text(
-                                e?.serialNumber ?? 'No Name',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                                // style: TextStyle(fontSize: 15.sp),
-                              ),
-                            ),
-                            trailing: InkWell(
-                              child: const Icon(
-                                Icons.edit,
-                                // size: Theme.of(context)
-                                //     .textTheme
-                                //     .bodyMedium!
-                                //     .fontSize,
-                              ),
-                              onTap: () {
-                                // DevicePage.show(context, e);
-                                context.goNamed(AppRoute.editDevice.name,
-                                    extra: e);
-                              },
-                            ),
-                          ),
-                        )
-                        .toList();
-                  },
-                  error: ((error, stackTrace) {
-                    return [Text('Error $error')];
-                  }),
-                  loading: (() => [const CircularProgressIndicator()])),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.add,
             ),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  useSafeArea: true,
+                  builder: (contextd) => const AddDeviceDialog());
+            },
           )
         ],
+      ),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: state.when(
+            data: (data) {
+              return data
+                  .map(
+                    (e) => ListTile(
+                      leading: Icon(Icons.water_drop_outlined),
+                      title: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Text(
+                          e?.serialNumber ?? 'No Name',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          // style: TextStyle(fontSize: 15.sp),
+                        ),
+                      ),
+                      trailing: InkWell(
+                        child: const Icon(
+                          Icons.edit,
+                          // size: Theme.of(context)
+                          //     .textTheme
+                          //     .bodyMedium!
+                          //     .fontSize,
+                        ),
+                        onTap: () {
+                          // DevicePage.show(context, e);
+                          context.goNamed(AppRoute.editDevice.name, extra: e);
+                        },
+                      ),
+                    ),
+                  )
+                  .toList();
+            },
+            error: ((error, stackTrace) {
+              return [Text('Error $error')];
+            }),
+            loading: (() => [const CircularProgressIndicator()])),
       ),
     );
   }
@@ -168,13 +133,11 @@ class AddDeviceDialog extends HookConsumerWidget {
         final state = ref.watch(deviceManagmentControllerProvider);
         final error = ref.watch(errorPro);
         final useQRCode = useState(false);
-        return AlertDialog(
-          // <-- SEE HERE
-          title: Text('Add Device',
-              style: Theme.of(context).textTheme.titleMedium),
-
-          content: SingleChildScrollView(
-            child: Column(
+        return SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: AlertDialog(
+            title: const Text('Add Device'),
+            content: Column(
               children: [
                 TabBar(
                   onTap: (value) {
@@ -185,12 +148,16 @@ class AddDeviceDialog extends HookConsumerWidget {
                       useQRCode.value = false;
                     }
                   },
+                  dividerColor: Colors.transparent,
                   tabs: const [
                     Tab(
-                      text: 'Scan QR Code',
+                      // text: 'Scan QR Code',
+                      icon: Icon(Icons.qr_code_2_outlined),
+                      text: 'Scan',
                     ),
                     Tab(
-                      text: 'Enter Device ID',
+                      text: 'Write',
+                      icon: Icon(Icons.edit_outlined),
                     ),
                   ],
                   controller: tabController,
@@ -222,8 +189,9 @@ class AddDeviceDialog extends HookConsumerWidget {
                                   controller: deviceSN,
                                   decoration: InputDecoration(
                                     labelText: 'Device ID',
-                                    labelStyle:
-                                        Theme.of(context).textTheme.bodyMedium,
+
+                                    // labelStyle:
+                                    //     Theme.of(context).textTheme.bodyMedium,
                                     errorText: error.isEmpty ? null : error,
                                   ),
                                   onChanged: (value) => ref
@@ -235,27 +203,27 @@ class AddDeviceDialog extends HookConsumerWidget {
                 ),
               ],
             ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: state.isLoading
+                    ? null
+                    : () {
+                        Navigator.of(context).pop();
+                      },
+                child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: error.isEmpty
+                    ? state.isLoading
+                        ? null
+                        : () {
+                            submit();
+                          }
+                    : null,
+                child: const Text('Yes'),
+              ),
+            ],
           ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: state.isLoading
-                  ? null
-                  : () {
-                      Navigator.of(context).pop();
-                    },
-              child: const Text('No'),
-            ),
-            TextButton(
-              onPressed: error.isEmpty
-                  ? state.isLoading
-                      ? null
-                      : () {
-                          submit();
-                        }
-                  : null,
-              child: const Text('Yes'),
-            ),
-          ],
         );
       },
     );

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_authenticator/amplify_authenticator.dart';
@@ -38,12 +39,14 @@ Future<void> main() async {
   final container = ProviderContainer(
     overrides: [],
   );
+  final savedThemeMode = await AdaptiveTheme.getThemeMode();
+
   runApp(
     DevicePreview(
       enabled: !kReleaseMode,
       builder: (context) => UncontrolledProviderScope(
         container: container,
-        child: const MyApp(),
+        child: MyApp(savedThemeMode),
       ),
     ),
   );
@@ -94,14 +97,15 @@ Future<void> _configureAmplify() async {
 // }
 
 class MyApp extends HookConsumerWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp(this.savedThemeMode, {Key? key}) : super(key: key);
 
+  final savedThemeMode;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
 
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
+    // AdaptiveTheme.of(context).setSystem();
     return Authenticator(
       child: ScreenUtilInit(
         designSize: const Size(360, 690),
@@ -114,9 +118,10 @@ class MyApp extends HookConsumerWidget {
 
           routerConfig: router,
           theme: ThemeData(
+            useMaterial3: true,
             // Define the default brightness and colors.
-            brightness: isDarkMode ? Brightness.dark : Brightness.light,
-            primaryColor: isDarkMode ? Colors.grey[800] : Colors.white,
+            brightness: savedThemeMode,
+            // primaryColor: isDarkMode ? Colors.grey[800] : Colors.white,
 
             // Define the default font family.
             fontFamily: 'Roboto',
@@ -134,10 +139,10 @@ class MyApp extends HookConsumerWidget {
               bodyLarge: TextStyle(fontSize: 18.sp, fontFamily: 'Roboto'),
               bodyMedium: TextStyle(fontSize: 14.sp, fontFamily: 'Roboto'),
             ),
-            iconTheme: IconThemeData(
-              color: isDarkMode ? Colors.white : Colors.grey[800],
-              size: 20.sp,
-            ),
+            // iconTheme: IconThemeData(
+            //   color: isDarkMode ? Colors.white : Colors.grey[800],
+            //   size: 20.sp,
+            // ),
           ),
           // home: SafeArea(
           //   child: Scaffold(
